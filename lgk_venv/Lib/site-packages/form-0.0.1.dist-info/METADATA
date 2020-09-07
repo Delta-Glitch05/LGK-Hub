@@ -1,0 +1,26 @@
+Metadata-Version: 2.1
+Name: form
+Version: 0.0.1
+Summary: UNKNOWN
+Home-page: https://github.com/eaybek/form
+Author: Erdem Aybek
+Author-email: eaybek@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Development Status :: 1 - Planning
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
+
+[github](https://github.com/eaybek/form/) | 
+[PyPi](https://pypi.org/project/form/) | 
+[ReadTheDocs](https://mvrt-form.readthedocs-hosted.com/en/latest/)  
+
+form  
+
+
+
+

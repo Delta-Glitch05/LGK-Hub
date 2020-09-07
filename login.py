@@ -396,11 +396,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        if(self.retranslating == False):
+        if self.retranslating == False:
             MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
             self.retranslating = True
         self.language = self.languageBox.currentText()
-        if(self.language == "English"):
+        if self.language == "English":
             self.welcome.setText(_translate("MainWindow", "Welcome to LGK-Hub!"))
             self.welcome.setGeometry(QtCore.QRect(250, 10, 340, 90))
             self.login_label.setText(_translate("MainWindow", "Before you start, you need to log in!"))
@@ -445,22 +445,22 @@ class Ui_MainWindow(object):
     
     def show_popup(self):
         msg = QMessageBox()
-        if(self.language == "English"):
+        if self.language == "English":
             msg.setWindowTitle("Warning!")
         else:
             msg.setWindowTitle("Attenzione!")
-        if(self.username == "" and self.password == ""):
-            if(self.language == "English"):
+        if self.username == "" and self.password == "":
+            if self.language == "English":
                 msg.setText("You have not entered your username and password!")
             else:
                 msg.setText("Non hai inserito i tuoi username e password!")
-        elif(self.username == "" and self.password != ""):
-            if(self.language == "English"):
+        elif self.username == "" and self.password != "":
+            if self.language == "English":
                 msg.setText("You have not entered your username!")
             else:
                 msg.setText("Non hai inserito il tuo username!")
-        elif(self.username != "" and self.password == ""):
-            if(self.language == "English"):
+        elif self.username != "" and self.password == "":
+            if self.language == "English":
                 msg.setText("You have not entered your password!")
             else:
                 msg.setText("Non hai inserito la tua password!")
@@ -474,32 +474,32 @@ class Ui_MainWindow(object):
     
     def login_check(self):
         #print(f"Username: {self.username}; password: {self.password}")
-        #if(self.username == "" or self.password == ""):
+        #if self.username == "" or self.password == "":
         #    self.show_popup()
         self.username_for_check = "username:" + self.username + "\n"
         self.password_for_check = "password:" + self.password + "\n"
         authenticated = False
         users_file = open("Users/users.txt","r").readlines()
         for line in users_file:
-            if(line == self.username_for_check):
+            if line == self.username_for_check:
                 i = users_file.index(line)
-                if(self.password_for_check == users_file[i + 1]):
+                if self.password_for_check == users_file[i + 1]:
                     self.warning_label.setText("")
                     authenticated = True
                     self.open_main_window()
                 else:
-                    if(self.language == "English"):
+                    if self.language == "English":
                         self.warning_label.setText("Wrong password!")
                     else:
                         self.warning_label.setText("Password errata!")
                     break
-            elif(line != self.username_for_check and line == users_file[-1]):
-                if(self.language == "English"):
+            elif line != self.username_for_check and line == users_file[-1]:
+                if self.language == "English":
                     self.warning_label.setText("Wrong username!")
                 else:
                     self.warning_label.setText("Username errato!")
                 break
-        if(self.username == "" or self.password == ""):
+        if self.username == "" or self.password == "":
             self.show_popup()
         return authenticated
     

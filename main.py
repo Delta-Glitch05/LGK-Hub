@@ -52,11 +52,11 @@ class MainWindow(QDialog):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        if(self.retranslating == False):
+        if self.retranslating == False:
             self.setWindowTitle(_translate("MainWindow", "MainWindow"))
             self.retranslating = True
         # self.language = self.languageBox.currentText()
-        if(self.language == "English"):
+        if self.language == "English":
             self.setWindowTitle("Choice menu")
             self.styleLabel.setText(_translate("MainWindow", "&Style:"))
             self.useStylePaletteCheckBox.setText(_translate("MainWindow", "&Use style's standard palette"))
@@ -64,11 +64,9 @@ class MainWindow(QDialog):
             self.groupBox.setTitle("Group 1")
             self.network_scanner.setText("Network Scanner")
             self.subdomain_scanner.setText("Subdomain Scanner")
-            self.sql_inj_scanner.setText("SQL Injection Scanner (EXPERIMENTAL)")
-            self.xss_scanner.setText("Cross-Site Scripting (XSS) Scanner (EXPERIMENTAL)")
             self.syn_flooder.setText("SYN Flooding Tool")
             self.brute_forcer.setText("Brute-Forcer")
-            self.steganography.setText("Steganography Tool")
+            self.steganotool.setText("Steganography Tool")
             self.website_crawler.setText("Website Crawler")
             self.file_encryptor.setText("File encryptor/decryptor")
             self.http_sniffer.setText("HTTP Sniffer")
@@ -83,11 +81,9 @@ class MainWindow(QDialog):
             self.groupBox.setTitle("Gruppo 1")
             self.network_scanner.setText("Scanner di rete")
             self.subdomain_scanner.setText("Scanner di sottodomini")
-            self.sql_inj_scanner.setText("Scanner di vulnerabilità SQL Injection (SPERIMENTALE)")
-            self.xss_scanner.setText("Scanner di vulnerabilità Cross-Site Scripting (XSS) (SPERIMENTALE)")
             self.syn_flooder.setText("Strumento di SYN Flooding")
             self.brute_forcer.setText("Brute-Forcer")
-            self.steganography.setText("Strumento di steganografia")
+            self.steganotool.setText("Strumento di steganografia")
             self.website_crawler.setText("Website Crawler")
             self.file_encryptor.setText("Criptatore/Decriptatore di file")
             self.http_sniffer.setText("HTTP Sniffer")
@@ -97,12 +93,13 @@ class MainWindow(QDialog):
 
 
     def changeStyle(self, styleName):
+        self.styleName = styleName
         QApplication.setStyle(QStyleFactory.create(styleName))
         self.changePalette()
 
 
     def changePalette(self):
-        if (self.useStylePaletteCheckBox.isChecked()):
+        if self.useStylePaletteCheckBox.isChecked():
             QApplication.setPalette(QApplication.style().standardPalette())
         else:
             QApplication.setPalette(self.originalPalette)
@@ -120,16 +117,12 @@ class MainWindow(QDialog):
         self.network_scanner.setDefault(True)
         self.subdomain_scanner = QPushButton("Subdomain Scanner")
         self.subdomain_scanner.setDefault(True)
-        self.sql_inj_scanner = QPushButton("SQL Injection Scanner")
-        self.sql_inj_scanner.setDefault(True)
-        self.xss_scanner = QPushButton("Cross-Site Scripting (XSS) Scanner")
-        self.xss_scanner.setDefault(True)
         self.syn_flooder = QPushButton("SYN Flooding tool")
         self.syn_flooder.setDefault(True)
         self.brute_forcer = QPushButton("Brute-Forcer")
         self.brute_forcer.setDefault(True)
-        self.steganography = QPushButton("Steganography tool")
-        self.steganography.setDefault(True)
+        self.steganotool = QPushButton("Steganography tool")
+        self.steganotool.setDefault(True)
         self.website_crawler = QPushButton("Website Crawler")
         self.website_crawler.setDefault(True)
         self.file_encryptor = QPushButton("File Encryptor/Decryptor")
@@ -150,11 +143,9 @@ class MainWindow(QDialog):
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.network_scanner)
         self.layout.addWidget(self.subdomain_scanner)
-        self.layout.addWidget(self.sql_inj_scanner)
-        self.layout.addWidget(self.xss_scanner)
         self.layout.addWidget(self.syn_flooder)
         self.layout.addWidget(self.brute_forcer)
-        self.layout.addWidget(self.steganography)
+        self.layout.addWidget(self.steganotool)
         self.layout.addWidget(self.website_crawler)
         self.layout.addWidget(self.file_encryptor)
         self.layout.addWidget(self.http_sniffer)
@@ -168,8 +159,10 @@ class MainWindow(QDialog):
         self.clicksOnButton = 0
         self.network_scanner.clicked.connect(self.open_network_scanner)
         self.subdomain_scanner.clicked.connect(self.open_subdomain_scanner)
-        self.sql_inj_scanner.clicked.connect(self.open_sql_injection_scanner)
-        self.xss_scanner.clicked.connect(self.open_xss_scanner)
+        self.syn_flooder.clicked.connect(self.open_syn_flooder)
+        self.brute_forcer.clicked.connect(self.open_brute_forcer)
+        self.steganotool.clicked.connect(self.open_steganotool)
+        self.website_crawler.clicked.connect(lambda: self.open_website_crawler_menu(self.styleName))
 
 
     """
@@ -228,71 +221,30 @@ class MainWindow(QDialog):
         with open("lang.txt", "a") as lang_file:
             lang_file.write("\nmenu")
         subprocess.Popen("subdomain_scanner.bat", shell=True)
-    
 
-    def open_sql_injection_scanner(self):
+
+    def open_syn_flooder(self):
         with open("lang.txt", "a") as lang_file:
             lang_file.write("\nmenu")
-        subprocess.Popen("sql_injection_scanner.bat", shell=True)
-    
+        subprocess.Popen("syn_flooder.bat", shell=True)
 
-    def open_xss_scanner(self):
+
+    def open_brute_forcer(self):
         with open("lang.txt", "a") as lang_file:
             lang_file.write("\nmenu")
-        subprocess.Popen("xss_scanner.bat", shell=True)
+        subprocess.Popen("brute-forcer.bat", shell=True)
+    
 
+    def open_steganotool(self):
+        with open("lang.txt", "a") as lang_file:
+            lang_file.write("\nmenu")
+        subprocess.Popen("steganotool.bat", shell=True)
+    
 
-    # THIS IS MY CODE!
-    def initUI_2(self):
-        font = QtGui.QFont("Roboto")
-        font.setPointSize(16)
-        main_label = QLabel("Scegli il programma che preferisci:")
-        main_label.setStyleSheet("color: red")
-        main_label.setFont(font)
-        pushButton = QPushButton("Network Scanner")
-        pushButton.setFont(font)
-        pushButton.setObjectName("Network Scanner")
-        pushButton_2 = QPushButton("Subdomain scanner")
-        pushButton_2.setFont(font)
-        pushButton_2 = QPushButton("Subdomain scanner")
-        pushButton_3 = QPushButton("SQL Injection scanner")
-        pushButton_3.setFont(font)
-        pushButton_3.setObjectName("SQL Injection scanner")
-        pushButton_4 = QPushButton("Brute-Forcer")
-        pushButton_4.setFont(font)
-        pushButton_4.setObjectName("Brute-Forcer")
-        
-        #hbox = QHBoxLayout()
-        #hbox.addStretch(1)
-        #hbox.addWidget(pushButton)
-        #hbox.addWidget(pushButton_2)
-        #vbox = QVBoxLayout()
-        #vbox.addStretch(1)
-        #vbox.addLayout(hbox)
-        #self.setLayout(vbox)
-
-        grid = QGridLayout()
-        grid.setSpacing(10)
-        
-        #names = ['Cls', 'Bck', '', 'Close',
-        #         '7', '8', '9', '/',
-        #         '4', '5', '6', '*',
-        #         '1', '2', '3', '-',
-        #         '0', '.', '=', '+']
-        #positions = [(i, j) for i in range(5) for j in range(4)]
-        #for position, name in zip(positions, names):
-        #    button = QPushButton(name)
-        #    grid.addWidget(button, *position)
-        # grid.addWidget(main_label, 0, 0)
-        grid.addWidget(pushButton, 1, 0)
-        grid.addWidget(pushButton_2, 1, 1)
-        grid.addWidget(pushButton_3, 2, 0)
-        grid.addWidget(pushButton_4, 2, 1)
-        self.setLayout(grid)
-        # self.move(300, 150)
-        self.setGeometry(300, 300, 350, 300)
-        self.setWindowTitle('Menù di scelta')
-        self.show()
+    def open_website_crawler_menu(self, style):
+        with open("lang.txt", "a") as lang_file:
+            lang_file.write(f"\n{style}")
+        subprocess.Popen("website_crawler_menu.py", shell=True)
 
 
 def main():
