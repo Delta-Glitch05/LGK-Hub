@@ -157,11 +157,11 @@ class MainWindow(QDialog):
         self.layout.addStretch(1)
         self.groupBox.setLayout(self.layout)
         self.clicksOnButton = 0
-        self.network_scanner.clicked.connect(self.open_network_scanner)
-        self.subdomain_scanner.clicked.connect(self.open_subdomain_scanner)
-        self.syn_flooder.clicked.connect(self.open_syn_flooder)
-        self.brute_forcer.clicked.connect(self.open_brute_forcer)
-        self.steganotool.clicked.connect(self.open_steganotool)
+        self.network_scanner.clicked.connect(lambda: self.open_application("network_scanner"))
+        self.subdomain_scanner.clicked.connect(lambda: self.open_application("subdomain_scanner"))
+        self.syn_flooder.clicked.connect(lambda: self.open_application("syn_flooder"))
+        self.brute_forcer.clicked.connect(lambda: self.open_application("brute-forcer"))
+        self.steganotool.clicked.connect(lambda: self.open_application("steganotool"))
         self.website_crawler.clicked.connect(lambda: self.open_website_crawler_menu(self.styleName))
 
 
@@ -203,7 +203,7 @@ class MainWindow(QDialog):
         self.timer.start(1000)
     
 
-    def open_network_scanner(self):
+    def open_application(self, app):
         """
         cmd = 'python network_scanner.py'
         proc = QProcess()
@@ -214,32 +214,8 @@ class MainWindow(QDialog):
         """
         with open("lang.txt", "a") as lang_file:
             lang_file.write("\nmenu")
-        subprocess.Popen("network_scanner.bat", shell=True)
+        subprocess.Popen(f"{app}.bat", shell=True)
 
-
-    def open_subdomain_scanner(self):
-        with open("lang.txt", "a") as lang_file:
-            lang_file.write("\nmenu")
-        subprocess.Popen("subdomain_scanner.bat", shell=True)
-
-
-    def open_syn_flooder(self):
-        with open("lang.txt", "a") as lang_file:
-            lang_file.write("\nmenu")
-        subprocess.Popen("syn_flooder.bat", shell=True)
-
-
-    def open_brute_forcer(self):
-        with open("lang.txt", "a") as lang_file:
-            lang_file.write("\nmenu")
-        subprocess.Popen("brute-forcer.bat", shell=True)
-    
-
-    def open_steganotool(self):
-        with open("lang.txt", "a") as lang_file:
-            lang_file.write("\nmenu")
-        subprocess.Popen("steganotool.bat", shell=True)
-    
 
     def open_website_crawler_menu(self, style):
         with open("lang.txt", "a") as lang_file:
