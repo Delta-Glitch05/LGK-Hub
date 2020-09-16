@@ -40,7 +40,30 @@ def main():
                 print("Arrivederci!\n")
             loop = False
             break
-        image_metadata_extractor(image_name, language)
+        while True:
+            if language == "English":
+                choice = input("Do you want to use ExifTool (1) or Hachoir (2)? --> ")
+            else:
+                choice = input("Vuoi usare ExifTool (1) o Hachoir (2)? --> ")
+            if choice == "1." or choice == "1":
+                tool = "ExifTool"
+                break
+            elif choice == "2." or choice == "2":
+                tool = "Hachoir"
+                break
+            elif choice.lower == "exit":
+                if language == "English":
+                    print("Goodbye!\n")
+                else:
+                    print("Arrivederci!\n")
+                loop = False
+                break
+            else:
+                if language == "English":
+                    print("You have not entered a valid choice!")
+                else:
+                    print("Non hai inserito una scelta valida!")
+        image_metadata_extractor(image_name, tool, mode, language)
         if loop == True:
             while True:
                 if language == "English":
@@ -69,29 +92,28 @@ def main():
                         break
 
 
-def image_metadata_extractor(image_name, language):
-    """
-    image = Image.open(image_name)
-    exifdata = image.getexif()
-    for tag_id in exifdata:
-        tag = TAGS.get(tag_id, tag_id)
-        data = exifdata.get(tag_id)
-        if isinstance(data, bytes):
-            try:
-                data = data.decode()
-            except UnicodeDecodeError:
-                pass
-        print(f"{tag:25}: {data}")
-    """
-    exeProcess = "hachoir-metadata"
-    process = subprocess.Popen([exeProcess, image_name], stdout=subprocess.PIPE, 
-                                    stderr=subprocess.STDOUT, universal_newlines=True)
-    infoDict = {}
-    for tag in process.stdout:
-            line = tag.strip().split(':')
+def image_metadata_extractor(image_name, tool, mode, language):
+    if tool == "ExifTool":
+        infoDict = {}
+        import os
+        print(os.getcwd())
+        exifToolPath = "ExifTool\\exiftool.exe"
+        process = subprocess.Popen([exifToolPath, image_name], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        for tag in process.stdout:
+            line = tag.strip().split(":")
             infoDict[line[0].strip()] = line[-1].strip()
-    for k,v in infoDict.items():
-        print(k,':', v)
+        for k, v in infoDict.items():
+            print(k, ":", v)
+    elif tool == "Hachoir":
+        exeProcess = "hachoir-metadata"
+        process = subprocess.Popen([exeProcess, image_name], stdout=subprocess.PIPE, 
+                                        stderr=subprocess.STDOUT, universal_newlines=True)
+        infoDict = {}
+        for tag in process.stdout:
+                line = tag.strip().split(':')
+                infoDict[line[0].strip()] = line[-1].strip()
+        for k,v in infoDict.items():
+            print(k,':', v)
 
 
 if __name__ == "__main__":

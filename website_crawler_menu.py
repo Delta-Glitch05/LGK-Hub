@@ -8,7 +8,7 @@ from PyQt5.QtGui import QIcon
 
 class Website_Crawler_Menu(QDialog):
     def __init__(self, parent=None):
-        self.language, self.style = self.get_lang_and_style()
+        self.language, self.style, self.mode = self.get_lang_and_style()
         super(Website_Crawler_Menu, self).__init__(parent)
         self.initUI()
 
@@ -107,6 +107,7 @@ class Website_Crawler_Menu(QDialog):
         self.weather_data_extractor.clicked.connect(lambda: self.open_application("weather_data_extractor"))
         self.yt_data_extractor.clicked.connect(lambda: self.open_application("yt_data_extractor"))
         self.wiki_data_extractor.clicked.connect(lambda: self.open_application("wiki_data_extractor"))
+        self.fb_mess_bot.clicked.connect(lambda: self.open_application("fb_mess_bot"))
         self.retranslating = False
         self.retranslateUi(Website_Crawler_Menu)
 
@@ -132,7 +133,7 @@ class Website_Crawler_Menu(QDialog):
             self.html_tab_to_csv_converter.setText("HTML Tables to CSV Converter")
             self.email_extractor.setText("E-Mail Extractor")
             self.xss_scanner.setText("Cross-Site Scripting (XSS) Scanner (EXPERIMENTAL)")
-            self.link_extractor.setText("Websites Links Extractor")
+            self.link_extractor.setText("Websites Link Extractor")
             self.image_downloader.setText("Image Downloader")
             self.weather_data_extractor.setText("Weather Data Extractor")
             self.yt_data_extractor.setText("YouTube Data Extractor")
@@ -165,21 +166,25 @@ class Website_Crawler_Menu(QDialog):
         with open("lang.txt","r") as lang_file:
             list_ = lang_file.readlines()
             language = list_[0]
-            style = list_[1]
             lang_list = list(language)
             if lang_list[-1] == "\n":
                 lang_list.pop()
             language = "".join(lang_list)
             if len(list_) >= 2:
                 style = list_[1]
+                if len(list_) == 3:
+                    mode = list_[2]
+                else:
+                    mode = "terminal"
                 with open("lang.txt","w") as lang_file:
                     lang_file.write(language)
-        return language, style
+        return language, style, mode
 
 
     def open_application(self, app):
-        with open("lang.txt", "a") as lang_file:
-            lang_file.write("\nmenu")
+        if self.mode == "menu":
+            with open("lang.txt", "a") as lang_file:
+                lang_file.write("\nmenu")
         subprocess.Popen(f"Website_Crawler\\{app}.bat", shell=True)
     
 

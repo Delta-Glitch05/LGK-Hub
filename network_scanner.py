@@ -1,10 +1,14 @@
+import sys, subprocess, platform
 from scapy.all import ARP, Ether, srp
 from socket import *
 import time
 from datetime import datetime
 import threading
+from threading import Thread
 from queue import Queue
-import sys, subprocess, platform
+from colorama import init, Fore
+from ipaddress import IPv4Network
+from pprint import pprint
 
 
 def main():
@@ -12,6 +16,7 @@ def main():
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
+    loop_2 = True
     while loop == True:
         if language == "English":
             print("""CHOOSE ONE OF THE FOLLOWING OPTIONS:
@@ -25,21 +30,21 @@ def main():
             2. SCANNERIZZARE LA RETE E I SINGOLI DISPOSITIVI;
             3. SCANNERIZZARE UN SINGOLO DISPOSITIVO;
             4. PING SWEEPING.""")
-        while True:
+        while loop_2 == True:
             if language == "English":
                 choice = input("INSERT YOUR CHOICE: ")
             else:
                 choice = input("INSERISCI LA TUA SCELTA: ")
             if choice == "1" or choice == "1.":
                 if language == "English":
-                    choice_2 = input("DO YOU WANT TO USE THE TCP (1) OR UDP (2) SCANNER? ")
+                    choice_2 = input("DO YOU WANT TO USE THE TCP (1) OR ARP (2) SCANNER? ")
                 else:
-                    choice_2 = input("VUOI USARE LO SCANNER TCP (1) O UDP (2)? ")
+                    choice_2 = input("VUOI USARE LO SCANNER TCP (1) O ARP (2)? ")
                 if choice_2 == "1" or choice_2 == "1.":
                     tcp_network_scanner(language)
                     break
                 elif choice_2 == "2" or choice_2 == "2.":
-                    udp_network_scanner(language)
+                    arp_scan(language)
                     break
                 else:
                     if language == "English":
@@ -50,21 +55,24 @@ def main():
                 adv_net_scanner(language)
                 break
             elif choice == "3" or choice == "3.":
-                if language == "English":
-                    choice_2 = input("DO YOU WANT TO USE THE SOCKET (1) OR THREADED (2) SCANNER? ")
-                else:
-                    choice_2 = input("VUOI USARE LO SCANNER SOCKET (1) O THREADED (2)? ")
-                if choice_2 == "1" or choice_2 == "1.":
-                    socket_port_scanner(language)
-                    break
-                elif choice_2 == "2" or choice_2 == "2.":
-                    threaded_port_scanner(language)
-                    break
-                else:
+                while True:
                     if language == "English":
-                        print("You have not entered a valid choice!")
+                        choice_2 = input("DO YOU WANT TO USE THE SOCKET (1) OR THREADED (2) SCANNER? ")
                     else:
-                        print("Non hai inserito una scelta valida!")
+                        choice_2 = input("VUOI USARE LO SCANNER SOCKET (1) O THREADED (2)? ")
+                    if choice_2 == "1" or choice_2 == "1.":
+                        socket_port_scanner(language)
+                        loop_2 = False
+                        break
+                    elif choice_2 == "2" or choice_2 == "2.":
+                        threaded_port_scanner(language)
+                        loop_2 = False
+                        break
+                    else:
+                        if language == "English":
+                            print("You have not entered a valid choice!")
+                        else:
+                            print("Non hai inserito una scelta valida!")
             elif choice == "4" or choice == "4.":
                 ping_sweeper(language)
                 break
@@ -94,7 +102,7 @@ def main():
                         print("ARRIVEDERCI!\n")
                     loop = False
                     break
-                elif exit_choice != "n" or exit_choice != "no":
+                elif exit_choice == "n" or exit_choice == "no":
                     if language == "English":
                         print("RETURNING TO THE MENU!\n")
                     else:
@@ -106,67 +114,109 @@ def main():
                         sys.exit()
                     else:
                         break
+                else:
+                    if language == "English":
+                        print("You have not entered a valid choice!")
+                    else:
+                        print("Non hai inserito una scelta valida!")
 
 
-def udp_network_scanner(language):
+threads = []
+clients = list()
+class ARP_Network_Scanner(Thread):
+    def __init__(self, ip):
+        super().__init__()
+        self.ip = ip
+    def run(self):
+        packet = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=self.ip)
+        result = srp(packet, timeout=3, verbose=0)[0]
+        for _, received in result:
+            clients.append(
+                {
+                    "ip": received.psrc,
+                    "mac": received.hwsrc
+                }
+            )
+        time.sleep(1)
+
+
+def arp_scan(language):
     if language == "English":
         target_ip = input("Insert the IP address to scan --> ")
     else:
         target_ip = input("Inserisci l'indirizzo IP da scannerizzare --> ")
-    target_ip = target_ip + "/24"
-    # Create an ARP packet
-    arp = ARP(pdst=target_ip)
-    # Create the Ether broadcast packet
-    ether = Ether(dst="ff:ff:ff:ff:ff:ff")
-    # Stack them
-    packet = ether/arp
-    result = srp(packet, timeout=3)[0]
-    # List of clients
-    clients = []
-
-    for sent, received in result:
-        # For each response, append the IP and the MAC address to the list
-        clients.append({"ip":received.psrc,"mac":received.hwsrc})
-
+    start = time.time()
+    for ip in IPv4Network(f"{target_ip}/24").hosts():
+        t = ARP_Network_Scanner(str(ip))
+        threads.append(t)
+        t.start()
+    for t in threads:
+        t.join()
+    pprint(clients)
     if language == "English":
-        print("Available devices on the network: ")
+        print(f"Executed in {time.time() - start} seconds.")
     else:
-        print("Dispositivi disponibili nella rete:")
-    print("IP" + " "*18+"MAC")
-    for client in clients:
-        print("{:16}    {}".format(client["ip"], client["mac"]))
+        print(f"Eseguito in {time.time() - start} secondi.")
     return clients
 
 
 def tcp_network_scanner(language):
-    if language == "English":
-        net = input("Insert the IP address to scan --> ")
-    else:
-        net = input("Inserisci l'indirizzo IP da scannerizzare --> ")
-    net_1 = net.split(".")
-    a = "."
-    net_2 = net_1[0] + a + net_1[1] + a + net_1[2] + a
-    if language == "English":
-        st_1 = int(input("Insert the starting number: "))
-        en_1 = int(input("Insert the ending number: "))
-    else:
-        st_1 = int(input("Inserisci il numero d'inizio: "))
-        en_1 = int(input("Inserisci l'ultimo numero: "))
-    en_1 = en_1 + 1
-    t1 = datetime.now()
-    for ip in range(st_1, en_1):
-        addr = net_2 + str(ip)
-        if tcp_scan(addr):
+    loop = True
+    while loop == True:
+        if language == "English":
+            net = input("Insert the IP address to scan --> ")
+        else:
+            net = input("Inserisci l'indirizzo IP da scannerizzare --> ")
+        try:
+            a = "."
+            net_1 = net.split(a)
+            net_2 = net_1[0] + a + net_1[1] + a + net_1[2] + a
+            while True:
+                if language == "English":
+                    st_1 = int(input("Insert the starting number: "))
+                else:
+                    st_1 = int(input("Inserisci il numero d'inizio: "))
+                if st_1 <= 0 or st_1 > 255:
+                    if language == "English":
+                        print("You have not entered a valid choice!")
+                    else:
+                        print("Non hai inserito una scelta valida!")
+                else:
+                    break
+            while True:
+                if language == "English":
+                    en_1 = int(input("Insert the ending number: "))
+                else:
+                    en_1 = int(input("Inserisci l'ultimo numero: "))
+                if en_1 <= 0 or en_1 > 255:
+                    if language == "English":
+                        print("You have not entered a valid choice!")
+                    else:
+                        print("Non hai inserito una scelta valida!")
+                else:
+                    break
+            en_1 = en_1 + 1
+            t1 = datetime.now()
+            for ip in range(st_1, en_1):
+                addr = net_2 + str(ip)
+                if tcp_scan(addr):
+                    if language == "English":
+                        print(addr, " is available")
+                    else:
+                        print(addr, " è disponibile")
+            t2 = datetime.now()
+            total = t2 - t1
             if language == "English":
-                print(addr, " is available")
+                print("Scan completed in: ", total)
             else:
-                print(addr, " è disponibile")
-    t2 = datetime.now()
-    total = t2 - t1
-    if language == "English":
-        print("Scan completed in: ", total)
-    else:
-        print("Scansione completata in: ", total)
+                print("Scansione completata in: ", total)
+            loop = False
+            break
+        except Exception as e:
+            if language == "English":
+                print("You have not entered a valid choice!")
+            else:
+                print("Non hai inserito una scelta valida!")
     
 
 def tcp_scan(addr):
@@ -180,40 +230,47 @@ def tcp_scan(addr):
 
 
 def socket_port_scanner(language, target_ip=""):
-    startTime = time.time()
     if target_ip == "":
-        if language == "English":
-            choice = input("Do you want to insert an IP address (1) or a host name (2)? --> ")
-        else:
-            choice = input("Vuoi inserire un indirizzo IP (1) o il nome di un host (2)? --> ")
-        if choice == "1" or choice == "1.":
+        while True:
             if language == "English":
-                target_ip = input("Insert the IP address to scan --> ")
-                print(f"Starting scan on the IP address: {target_ip}")
+                choice = input("Do you want to insert an IP address (1) or a host name (2)? --> ")
             else:
-                target_ip = input("Inserisci l'indirizzo IP da scannerizzare --> ")
-                print(f"Avvio della scansione sull'indirizzo IP: {target_ip}")
-        elif choice == "2" or choice == "2.":
+                choice = input("Vuoi inserire un indirizzo IP (1) o il nome di un host (2)? --> ")
+            if choice == "1" or choice == "1.":
+                if language == "English":
+                    target_ip = input("Insert the IP address to scan --> ")
+                    print(f"Starting scan on the IP address: {target_ip}")
+                else:
+                    target_ip = input("Inserisci l'indirizzo IP da scannerizzare --> ")
+                    print(f"Avvio della scansione sull'indirizzo IP: {target_ip}")
+                break
+            elif choice == "2" or choice == "2.":
+                if language == "English":
+                    host = input("Insert the host name --> ")
+                    target_ip = gethostbyname(host)
+                    print(f"Starting scan on the host: {host} ({target_ip})")
+                else:
+                    host = input("Inserisci il nome dell'host --> ")
+                    target_ip = gethostbyname(host)
+                    print(f"Avvio della scansione sull'host: {host} ({target_ip})")
+                break
+            else:
+                if language == "English":
+                    print("You have not entered a valid choice!")
+                else:
+                    print("Non hai inserito una scelta valida!")
             if language == "English":
-                host = input("Insert the host name --> ")
-                target_ip = gethostbyname(host)
-                print(f"Starting scan on the host: {host} ({target_ip})")
+                p_range = input("Insert the range of ports to scan (first-last) --> ")
             else:
-                host = input("Inserisci il nome dell'host --> ")
-                target_ip = gethostbyname(host)
-                print(f"Avvio della scansione sull'host: {host} ({target_ip})")
-        else:
-            if language == "English":
-                print("You have not entered a valid choice!")
-            else:
-                print("Non hai inserito una scelta valida!")
+                p_range = input("Inserisci il raggio di porte da scansionare (prima-ultima) --> ")
     elif target_ip != "":
         if language == "English":
             print(f"Starting scan on the IP address: {target_ip}")
         else:
             print(f"Avvio della scansione sull'indirizzo IP: {target_ip}")
+    startTime = time.time()
     open_ports = []
-    for port in range(50, 501):
+    for port in range(0, 501):
         s = socket(AF_INET, SOCK_STREAM)
         conn = s.connect_ex((target_ip, port))
         if language == "English":
@@ -240,9 +297,9 @@ def socket_port_scanner(language, target_ip=""):
 
 
 def adv_net_scanner(language):
-    clients = udp_network_scanner(language)
+    clients = arp_scan(language)
     for couple in clients:
-        socket_port_scanner(language, couple["ip"])
+        threaded_port_scanner(language, couple["ip"])
 
 
 def ping_sweeper(language):
@@ -250,8 +307,8 @@ def ping_sweeper(language):
         net = input("Insert the IP address to scan --> ")
     else:
         net = input("Inserisci l'indirizzo IP da scannerizzare --> ")
-    net_1 = net.split(".")
     a = "."
+    net_1 = net.split(a)
     net_2 = net_1[0] + a + net_1[1] + a + net_1[2] + a
     if language == "English":
         st_1 = int(input("Insert the starting number: "))
@@ -291,70 +348,90 @@ def ping_sweeper(language):
         print("Scansione completata in: ", total)
 
 
+GREEN = Fore.GREEN
+RESET = Fore.RESET
+GRAY = Fore.LIGHTBLACK_EX
+N_THREADS = 200
+q = Queue()
+print_lock = threading.Lock()
 def threaded_port_scanner(language, target_ip=""):
-    setdefaulttimeout(0.25)
-    print_lock = threading.Lock()
+    # setdefaulttimeout(0.25)
+    global q
+    global print_lock
     if target_ip == "":
-        if language == "English":
-            choice = input("Do you want to insert an IP address (1) or a host name (2)? --> ")
-        else:
-            choice = input("Vuoi inserire un indirizzo IP (1) o il nome di un host (2)? --> ")
-        if choice == "1" or choice == "1.":
+        while True:
             if language == "English":
-                target_ip = input("Insert the IP address to scan --> ")
-                print(f"Starting the scan on the IP address: {target_ip}")
+                choice = input("Do you want to insert an IP address (1) or a host name (2)? --> ")
             else:
-                target_ip = input("Inserisci l'indirizzo IP da scannerizzare --> ")
-                print(f"Avvio della scansione sull'indirizzo IP: {target_ip}")
-        elif choice == "2" or choice == "2.":
-            if language == "English":
-                host = input("Insert a host name --> ")
-                target_ip = gethostbyname(host)
-                print(f"Starting the scan on the host: {host} ({target_ip})")
+                choice = input("Vuoi inserire un indirizzo IP (1) o il nome di un host (2)? --> ")
+            if choice == "1" or choice == "1.":
+                if language == "English":
+                    target_ip = input("Insert the IP address to scan --> ")
+                    print(f"Starting scan on the IP address: {target_ip}")
+                else:
+                    target_ip = input("Inserisci l'indirizzo IP da scannerizzare --> ")
+                    print(f"Avvio della scansione sull'indirizzo IP: {target_ip}")
+                break
+            elif choice == "2" or choice == "2.":
+                if language == "English":
+                    host = input("Insert the host name --> ")
+                    target_ip = gethostbyname(host)
+                    print(f"Starting scan on the host: {host} ({target_ip})")
+                else:
+                    host = input("Inserisci il nome dell'host --> ")
+                    target_ip = gethostbyname(host)
+                    print(f"Avvio della scansione sull'host: {host} ({target_ip})")
+                break
             else:
-                host = input("Inserisci il nome dell'host --> ")
-                target_ip = gethostbyname(host)
-                print(f"Avvio della scansione sull'host: {host} ({target_ip})")
-        else:
-            if language == "English":
-                print("You have not entered a valid choice!")
-            else:
-                print("Non hai inserito una scelta valida!")
+                if language == "English":
+                    print("You have not entered a valid choice!")
+                else:
+                    print("Non hai inserito una scelta valida!")
     elif target_ip != "":
         if language == "English":
             print(f"Starting the scan on the IP address: {target_ip}")
         else:
             print(f"Avvio della scansione sull'indirizzo IP: {target_ip}")
-    def portscan(port):
-        s = socket(AF_INET, SOCK_STREAM)
-        try:
-            conn = s.connect((target_ip, port))
-            with print_lock:
-                if language == "English":
-                    print(f"Port {port} is open")
-                else:
-                    print(f"La porta {port} è aperta")
-            conn.close()
-        except:
-            pass
-    def threader():
-        while True:
-            worker = q.get()
-            portscan(worker)
-            q.task_done()
-    q = Queue()
     startTime = time.time()
-    for x in range(100):
-        t = threading.Thread(target = threader)
+    for t in range(N_THREADS):
+        t = threading.Thread(target=lambda: threader(target_ip, language))
         t.daemon = True
         t.start()
     for worker in range(1, 501):
         q.put(worker)
     q.join()
     if language == "English":
-        print("Time taken: ", time.time() - startTime)
+        print("Scanning completed in:", time.time() - startTime)
     else:
-        print("Tempo impiegato: ", time.time() - startTime)
+        print("Scansione completata in:", time.time() - startTime)
+
+
+def threaded_portscan(target_ip, port, language):
+    try:
+        s = socket(AF_INET, SOCK_STREAM)
+        s.connect((target_ip, port))
+    except:
+        with print_lock:
+            if language == "English":
+                print(f"{GRAY}{target_ip:15}:{port:5} is closed  {RESET}", end='\r')
+            else:
+                print(f"{GRAY}{target_ip:15}:{port:5} è chiusa  {RESET}", end='\r')
+    else:
+        with print_lock:
+            if language == "English":
+                print(f"{GREEN}{target_ip:15}:{port:5} is open    {RESET}")
+            else:
+                print(f"{GREEN}{target_ip:15}:{port:5} è aperta    {RESET}")
+    finally:
+        s.close()
+
+
+def threader(target_ip, language):
+    global q
+    while True:
+        worker = q.get()
+        threaded_portscan(target_ip, worker, language)
+        q.task_done()
 
 
 def get_lang_and_mode(mode):

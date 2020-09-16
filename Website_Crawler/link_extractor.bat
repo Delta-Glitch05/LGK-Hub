@@ -1,2 +1,2 @@
 cls;
-.\Website_Crawler\links_extractor.py
+.\Website_Crawler\link_extractor.py

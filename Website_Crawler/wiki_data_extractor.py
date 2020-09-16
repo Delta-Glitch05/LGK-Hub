@@ -30,9 +30,9 @@ def main():
     loop = True
     while loop == True:
         if language == "English":
-            research = input("enter what you want to search for on Wikipedia (ex: Python programming language) --> ")
+            research = input("Enter what you want to search for on Wikipedia (ex: Python programming language) --> ")
         else:
-            research = input("inserisci ciò che vuoi cercare su Wikipedia (es: Python) --> ")
+            research = input("Inserisci ciò che vuoi cercare su Wikipedia (es: Python) --> ")
         if research.lower() == "exit":
             if language == "English":
                 print("Goodbye!\n")

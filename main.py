@@ -14,6 +14,8 @@ class MainWindow(QDialog):
         self.initUI()
 
     def initUI(self):
+        self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
+        self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
         self.originalPalette = QApplication.palette()
         self.styleComboBox = QComboBox()
         self.styleComboBox.addItems(QStyleFactory.keys())
@@ -24,11 +26,18 @@ class MainWindow(QDialog):
         self.useStylePaletteCheckBox = QCheckBox("&Use style's standard palette")
         self.useStylePaletteCheckBox.setChecked(True)
         self.disableWidgetsCheckBox = QCheckBox("&Disable widgets")
-        self.createGroupBox()
+        self.createTopLeftGroupBox()
+        self.createTopRightGroupBox()
+        self.createBottomLeftTabWidget()
+        self.createBottomRightGroupBox()
+        self.createProgressBar()
         self.createProgressBar()
         self.styleComboBox.activated[str].connect(self.changeStyle)
         self.useStylePaletteCheckBox.toggled.connect(self.changePalette)
-        self.disableWidgetsCheckBox.toggled.connect(self.groupBox.setDisabled)
+        self.disableWidgetsCheckBox.toggled.connect(self.topLeftGroupBox.setDisabled)
+        self.disableWidgetsCheckBox.toggled.connect(self.topRightGroupBox.setDisabled)
+        self.disableWidgetsCheckBox.toggled.connect(self.bottomLeftTabWidget.setDisabled)
+        self.disableWidgetsCheckBox.toggled.connect(self.bottomRightGroupBox.setDisabled)
         self.topLayout = QHBoxLayout()
         self.topLayout.addWidget(self.styleLabel)
         self.topLayout.addWidget(self.styleComboBox)
@@ -37,7 +46,10 @@ class MainWindow(QDialog):
         self.topLayout.addWidget(self.disableWidgetsCheckBox)
         self.mainLayout = QGridLayout()
         self.mainLayout.addLayout(self.topLayout, 0, 0, 1, 2)
-        self.mainLayout.addWidget(self.groupBox, 1, 0, 2, 2)
+        self.mainLayout.addWidget(self.topLeftGroupBox, 1, 0)
+        self.mainLayout.addWidget(self.topRightGroupBox, 1, 1)
+        self.mainLayout.addWidget(self.bottomLeftTabWidget, 2, 0)
+        self.mainLayout.addWidget(self.bottomRightGroupBox, 2, 1)
         # self.mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
         self.mainLayout.setRowStretch(1, 1)
         self.mainLayout.setRowStretch(2, 1)
@@ -61,7 +73,8 @@ class MainWindow(QDialog):
             self.styleLabel.setText(_translate("MainWindow", "&Style:"))
             self.useStylePaletteCheckBox.setText(_translate("MainWindow", "&Use style's standard palette"))
             self.disableWidgetsCheckBox.setText(_translate("MainWindow", "&Disable widgets"))
-            self.groupBox.setTitle("Group 1")
+            self.topLeftGroupBox.setTitle("Applications")
+            self.topRightGroupBox.setTitle("Settings")
             self.network_scanner.setText("Network Scanner")
             self.subdomain_scanner.setText("Subdomain Scanner")
             self.syn_flooder.setText("SYN Flooding Tool")
@@ -73,12 +86,15 @@ class MainWindow(QDialog):
             self.dns_spoofer.setText("DNS Spoofer")
             self.arp_spoofer.setText("ARP Spoofer")
             self.t_ssh_client.setText("SSH and Telnet client")
+            self.app_settings_label.setText("Application Settings")
+            self.return_to_start_label.setText("When returning to the start:")
         else:
             self.setWindowTitle("Menù di scelta")
             self.styleLabel.setText(_translate("MainWindow", "&Stile:"))
             self.useStylePaletteCheckBox.setText(_translate("MainWindow", "&Usa i colori standard dello stile"))
             self.disableWidgetsCheckBox.setText(_translate("MainWindow", "&Disabilita i widgets"))
-            self.groupBox.setTitle("Gruppo 1")
+            self.topLeftGroupBox.setTitle("Applicazioni")
+            self.topRightGroupBox.setTitle("Impostazioni")
             self.network_scanner.setText("Scanner di rete")
             self.subdomain_scanner.setText("Scanner di sottodomini")
             self.syn_flooder.setText("Strumento di SYN Flooding")
@@ -90,6 +106,10 @@ class MainWindow(QDialog):
             self.dns_spoofer.setText("DNS Spoofer")
             self.arp_spoofer.setText("ARP Spoofer")
             self.t_ssh_client.setText("Client SSH e Telnet")
+            self.app_settings_label.setText("Impostazioni delle Applicazioni")
+            self.return_to_start_label.setText("Quando si ritorna all'inizio:")
+            self.radioButton1.setText("Riavvia l'applicazione e pulisci la finestra del terminale")
+            self.radioButton2.setText("Mantiene l'output e non pulisce la finestra del terminale")
 
 
     def changeStyle(self, styleName):
@@ -111,8 +131,8 @@ class MainWindow(QDialog):
         self.progressBar.setValue(self.curVal + (self.maxVal - self.curVal) // 100)
   
 
-    def createGroupBox(self):
-        self.groupBox = QGroupBox("Group 1")
+    def createTopLeftGroupBox(self):
+        self.topLeftGroupBox = QGroupBox("Applications")
         self.network_scanner = QPushButton("Network Scanner")
         self.network_scanner.setDefault(True)
         self.subdomain_scanner = QPushButton("Subdomain Scanner")
@@ -155,7 +175,7 @@ class MainWindow(QDialog):
         # self.layout.addWidget(togglePushButton)
         # self.layout.addWidget(flatPushButton)
         self.layout.addStretch(1)
-        self.groupBox.setLayout(self.layout)
+        self.topLeftGroupBox.setLayout(self.layout)
         self.clicksOnButton = 0
         self.network_scanner.clicked.connect(lambda: self.open_application("network_scanner"))
         self.subdomain_scanner.clicked.connect(lambda: self.open_application("subdomain_scanner"))
@@ -165,33 +185,106 @@ class MainWindow(QDialog):
         self.website_crawler.clicked.connect(lambda: self.open_website_crawler_menu(self.styleName))
 
 
-    """
+    def createTopRightGroupBox(self):
+        self.topRightGroupBox = QGroupBox("Settings")
+        self.gen_font = QtGui.QFont()
+        self.gen_font.setFamily("Arial Black")
+        self.gen_font.setPointSize(10)
+        # self.gen_font.setWeight(100)
+        self.gen_font.setBold(True)
+        self.topRightGroupBox.setFont(self.gen_font)
+        self.app_settings_label = QLabel("Application Settings")
+        self.font_1 = QtGui.QFont()
+        self.font_1.setFamily("Arial Nova")
+        self.font_1.setWeight(40)
+        self.font_1.setBold(True)
+        self.return_to_start_label = QLabel("When returning to the start:")
+        self.return_to_start_label.setFont(self.font_1)
+        self.font_2 = QtGui.QFont()
+        self.font_2.setFamily("Arial")
+        self.font_2.setPointSize(9)
+        self.font_2.setWeight(60)
+        # self.font_2.setBold(True)
+        self.radioButton1 = QRadioButton("Restart the application and clear the terminal window")
+        self.radioButton2 = QRadioButton("Keep the output and don't clean the terminal window")
+        self.radioButton1.setChecked(True)
+        self.radioButton1.setFont(self.font_2)
+        self.radioButton2.setFont(self.font_2)
+        # self.app_settings_label.setAlignment(Qt.AlignCenter)
+        # self.return_to_start_label.setAlignment(Qt.AlignCenter)
+        self.button_font = QtGui.QFont()
+        self.button_font.setFamily("Arial Nova")
+        self.button_font.setWeight(50)
+        self.conf_button = QPushButton("Confirm")
+        self.conf_button.setDefault(True)
+        self.conf_button.setFont(self.button_font)
+        self.checkBox = QCheckBox("Tri-state check box")
+        self.checkBox.setTristate(True)
+        self.checkBox.setCheckState(Qt.PartiallyChecked)
+        layout = QVBoxLayout()
+        layout.addWidget(self.app_settings_label)
+        layout.addWidget(self.return_to_start_label)
+        layout.addWidget(self.radioButton1)
+        layout.addWidget(self.radioButton2)
+        # layout.addWidget(self.conf_button, 10, alignment=QtCore.Qt.AlignBottom)
+        # layout.addWidget(checkBox)
+        layout.addStretch(1)
+        self.topRightGroupBox.setLayout(layout)
+
+
     def createBottomLeftTabWidget(self):
         self.bottomLeftTabWidget = QTabWidget()
         self.bottomLeftTabWidget.setSizePolicy(QSizePolicy.Preferred,
                 QSizePolicy.Ignored)
-        self.tab1 = QWidget()
-        self.tableWidget = QTableWidget(10, 10)
-        self.tab1hbox = QHBoxLayout()
-        self.tab1hbox.setContentsMargins(5, 5, 5, 5)
-        self.tab1hbox.addWidget(self.tableWidget)
-        self.tab1.setLayout(self.tab1hbox)
-        self.tab2 = QWidget()
-        self.textEdit = QTextEdit()
-        self.textEdit.setPlainText("Twinkle, twinkle, little star,\n"
+        tab1 = QWidget()
+        tableWidget = QTableWidget(10, 10)
+        tab1hbox = QHBoxLayout()
+        tab1hbox.setContentsMargins(5, 5, 5, 5)
+        tab1hbox.addWidget(tableWidget)
+        tab1.setLayout(tab1hbox)
+        tab2 = QWidget()
+        textEdit = QTextEdit()
+
+        textEdit.setPlainText("Twinkle, twinkle, little star,\n"
                               "How I wonder what you are.\n" 
                               "Up above the world so high,\n"
                               "Like a diamond in the sky.\n"
                               "Twinkle, twinkle, little star,\n" 
                               "How I wonder what you are!\n")
+        tab2hbox = QHBoxLayout()
+        tab2hbox.setContentsMargins(5, 5, 5, 5)
+        tab2hbox.addWidget(textEdit)
+        tab2.setLayout(tab2hbox)
+        self.bottomLeftTabWidget.addTab(tab1, "&Table")
+        self.bottomLeftTabWidget.addTab(tab2, "Text &Edit")
 
-        self.tab2hbox = QHBoxLayout()
-        self.tab2hbox.setContentsMargins(5, 5, 5, 5)
-        self.tab2hbox.addWidget(self.textEdit)
-        self.tab2.setLayout(self.tab2hbox)
-        self.bottomLeftTabWidget.addTab(self.tab1, "&Table")
-        self.bottomLeftTabWidget.addTab(self.tab2, "Text &Edit")
-    """
+
+    def createBottomRightGroupBox(self):
+        self.bottomRightGroupBox = QGroupBox("Group 3")
+        self.bottomRightGroupBox.setCheckable(True)
+        self.bottomRightGroupBox.setChecked(True)
+        lineEdit = QLineEdit('s3cRe7')
+        lineEdit.setEchoMode(QLineEdit.Password)
+        spinBox = QSpinBox(self.bottomRightGroupBox)
+        spinBox.setValue(50)
+        dateTimeEdit = QDateTimeEdit(self.bottomRightGroupBox)
+        dateTimeEdit.setDateTime(QDateTime.currentDateTime())
+        slider = QSlider(Qt.Horizontal, self.bottomRightGroupBox)
+        slider.setValue(40)
+        scrollBar = QScrollBar(Qt.Horizontal, self.bottomRightGroupBox)
+        scrollBar.setValue(60)
+        dial = QDial(self.bottomRightGroupBox)
+        dial.setValue(30)
+        dial.setNotchesVisible(True)
+        layout = QGridLayout()
+        layout.addWidget(lineEdit, 0, 0, 1, 2)
+        layout.addWidget(spinBox, 1, 0, 1, 2)
+        layout.addWidget(dateTimeEdit, 2, 0, 1, 2)
+        layout.addWidget(slider, 3, 0)
+        layout.addWidget(scrollBar, 4, 0)
+        layout.addWidget(dial, 3, 1, 2, 1)
+        layout.setRowStretch(5, 1)
+        self.bottomRightGroupBox.setLayout(layout)
 
 
     def createProgressBar(self):
@@ -204,22 +297,17 @@ class MainWindow(QDialog):
     
 
     def open_application(self, app):
-        """
-        cmd = 'python network_scanner.py'
-        proc = QProcess()
-        clear = subprocess.call(['cls'], shell=True)
-        proc.startDetached(cmd)
-        proc = QProcess()
-        proc.startDetached("open_network_scanner.bat")
-        """
-        with open("lang.txt", "a") as lang_file:
-            lang_file.write("\nmenu")
+        if self.radioButton1.isChecked():
+            with open("lang.txt", "a") as lang_file:
+                lang_file.write("\nmenu")
         subprocess.Popen(f"{app}.bat", shell=True)
 
 
     def open_website_crawler_menu(self, style):
         with open("lang.txt", "a") as lang_file:
             lang_file.write(f"\n{style}")
+            if self.radioButton1.isChecked():
+                lang_file.write("\nmenu")
         subprocess.Popen("website_crawler_menu.py", shell=True)
 
 
