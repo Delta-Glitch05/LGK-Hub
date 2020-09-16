@@ -8,7 +8,7 @@ from PyQt5.QtGui import QIcon
 
 class Website_Crawler_Menu(QDialog):
     def __init__(self, parent=None):
-        self.language, self.style, self.mode = self.get_lang_and_style()
+        self.language, self.style, self.mode = self.get_lang_style_and_mode()
         super(Website_Crawler_Menu, self).__init__(parent)
         self.initUI()
 
@@ -16,9 +16,9 @@ class Website_Crawler_Menu(QDialog):
         # QtWidgets.QWidget.__init__(self)
         self.setWindowTitle('Website Crawler Menu')
         self.setGeometry(600, 275, 500, 400)
-        self.changeStyle(self.style)
+        self.changeStyle()
         # print(self.style)
-        self.originalPalette = QApplication.palette()
+        # self.originalPalette = QApplication.palette()
         self.label = QtWidgets.QLabel("boh")
         self.createGroupBox()
         self.mainLayout = QGridLayout()
@@ -162,7 +162,7 @@ class Website_Crawler_Menu(QDialog):
             self.fb_mess_bot.setText("Bot di Facebook Messenger")
 
     
-    def get_lang_and_style(self):
+    def get_lang_style_and_mode(self):
         with open("lang.txt","r") as lang_file:
             list_ = lang_file.readlines()
             language = list_[0]
@@ -171,7 +171,7 @@ class Website_Crawler_Menu(QDialog):
                 lang_list.pop()
             language = "".join(lang_list)
             if len(list_) >= 2:
-                style = list_[1]
+                style = list_[1][:-1]
                 if len(list_) == 3:
                     mode = list_[2]
                 else:
@@ -188,10 +188,10 @@ class Website_Crawler_Menu(QDialog):
         subprocess.Popen(f"Website_Crawler\\{app}.bat", shell=True)
     
 
-    def changeStyle(self, styleName):
-        QApplication.setStyle(QStyleFactory.create(styleName))
+    def changeStyle(self):
+        QApplication.setStyle(QStyleFactory.create(self.style))
         # self.changePalette()
-        QApplication.setPalette(QApplication.style().standardPalette())
+        QApplication.setPalette(QApplication.style().standardPalette())            
 
 
 if __name__ == "__main__":
