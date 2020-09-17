@@ -1,4 +1,4 @@
-import requests, subprocess, sys
+import requests, subprocess, sys, cryptography
 from cryptography.fernet import Fernet
 
 
@@ -143,24 +143,31 @@ def encryptor(choice, language):
             else:
                 print(f"Fatto!\nStringa criptata: {encrypted_string}")
     else:
-        if language == "English":
-            file_name = input("Insert the name of the file to encrypt --> ")
-        else:
-            file_name = input("Inserisci il nome del file da criptare --> ")
-        if file_name.lower() == "exit":
-            exit_ = True
-        else:
-            # file_data = open(file_name).read()
-            with open(file_name, "rb") as file:
-                file_data = file.read()
-            print(file_data)
-            encrypted_data = f.encrypt(file_data)
-            with open(f"{file_name} - Encrypted.txt", "wb") as file:
-                file.write(encrypted_data)
+        while True:
             if language == "English":
-                print("Done!")
+                file_name = input("Insert the name of the file to encrypt --> ")
             else:
-                print("Fatto!")
+                file_name = input("Inserisci il nome del file da criptare --> ")
+            if file_name.lower() == "exit":
+                exit_ = True
+            else:
+                try:
+                    # file_data = open(file_name).read()
+                    with open(file_name, "rb") as file:
+                        file_data = file.read()
+                    encrypted_data = f.encrypt(file_data)
+                    with open(f"{file_name} - Encrypted.txt", "wb") as file:
+                        file.write(encrypted_data)
+                    if language == "English":
+                        print("Done!")
+                    else:
+                        print("Fatto!")
+                    break
+                except FileNotFoundError:
+                    if language == "English":
+                        print("File not found!")
+                    else:
+                        print("File non trovato!")
     return exit_
 
 
@@ -179,37 +186,59 @@ def decryptor(choice, language):
     key = load_key()
     f = Fernet(key)
     if choice == "1" or choice == "1.":
-        if language == "English":
-            encrypted_string = input("Insert the encrypted string --> ")
-        else:
-            encrypted_string = input("Inserisci la stringa criptata --> ")
-        if encrypted_string.lower() == "exit":
-            exit_ = True
-        else:
-            encrypted_string = encrypted_string.encode()
-            decrypted_string = f.decrypt(encrypted_string)
+        while True:
             if language == "English":
-                print(f"Done!\nString decrypted: {decrypted_string}")
+                encrypted_string = input("Insert the encrypted string --> ")
             else:
-                print(f"Fatto!\nStringa decriptata: {decrypted_string}")
+                encrypted_string = input("Inserisci la stringa criptata --> ")
+            if encrypted_string.lower() == "exit":
+                exit_ = True
+                break
+            else:
+                try:
+                    encrypted_string = encrypted_string.encode()
+                    decrypted_string = f.decrypt(encrypted_string)
+                    if language == "English":
+                        print(f"Done!\nString decrypted: {decrypted_string}")
+                    else:
+                        print(f"Fatto!\nStringa decriptata: {decrypted_string}")
+                    break
+                except Exception:
+                    if language == "English":
+                        print("You have not entered a valid crypted string!")
+                    else:
+                        print("Non hai inserito una stringa criptata valida!")
     else:
-        if language == "English":
-            file_name = input("Insert the name of the file to decrypt --> ")
-        else:
-            file_name = input("Inserisci il nome del file da decriptare --> ")
-        if file_name.lower() == "exit":
-            exit_ = True
-        else:
-            # file_data = open(file_name.read()).encode()
-            with open(file_name, "rb") as file:
-                encrypted_data = file.read()
-            decrypted_data = f.decrypt(encrypted_data)
-            with open(f"{file_name} - Decrypted.txt", "wb") as file:
-                file.write(decrypted_data)
-            if language == "English":
-                print("Done!")
-            else:
-                print("Fatto!")
+        while True:
+            try:
+                if language == "English":
+                    file_name = input("Insert the name of the file to decrypt --> ")
+                else:
+                    file_name = input("Inserisci il nome del file da decriptare --> ")
+                if file_name.lower() == "exit":
+                    exit_ = True
+                else:
+                    # file_data = open(file_name.read()).encode()
+                    with open(file_name, "rb") as file:
+                        encrypted_data = file.read()
+                    decrypted_data = f.decrypt(encrypted_data)
+                    with open(f"{file_name} - Decrypted.txt", "wb") as file:
+                        file.write(decrypted_data)
+                    if language == "English":
+                        print("Done!")
+                    else:
+                        print("Fatto!")
+                break
+            except FileNotFoundError:
+                if language == "English":
+                    print("File not found!")
+                else:
+                    print("File non trovato!")
+            except cryptography.fernet.InvalidToken:
+                if language == "English":
+                    print("File not valid!")
+                else:
+                    print("File non valido!")
     return exit_
 if __name__ == "__main__":
     main()
