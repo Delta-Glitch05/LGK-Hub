@@ -27,7 +27,7 @@ def main():
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
-    stop = False
+    exit_ = False
     while loop == True:
         while True:
             if language == "English":
@@ -53,8 +53,16 @@ def main():
                         print("Arrivederci!\n")
                     loop = False
                     break
-                encryptor(choice_2, language)
-                break
+                exit_ = encryptor(choice_2, language)
+                if exit_ == True:
+                    if language == "English":
+                        print("Goodbye!\n")
+                    else:
+                        print("Arrivederci!\n")
+                    loop = False
+                    break
+                else:
+                    break
             elif choice == "2" or choice == "2.":
                 if language == "English":
                     choice_2 = input("Do you want to decrypt a string (1) or a file (2)? --> ")
@@ -67,8 +75,16 @@ def main():
                         print("Arrivederci!\n")
                     loop = False
                     break
-                decryptor(choice_2, language)
-                break
+                exit_ = decryptor(choice_2, language)
+                if exit_ == True:
+                    if language == "English":
+                        print("Goodbye!\n")
+                    else:
+                        print("Arrivederci!\n")
+                    loop = False
+                    break
+                else:
+                    break
             else:
                 if language == "English":
                     print("You have not entered a valid choice!")
@@ -108,6 +124,7 @@ def main():
 
 
 def encryptor(choice, language):
+    exit_ = False
     write_key()
     key = load_key()
     f = Fernet(key)
@@ -116,28 +133,35 @@ def encryptor(choice, language):
             string = input("Insert the string to encrypt --> ")
         else:
             string = input("Inserisci la stringa da criptare --> ")
-        string = string.encode()
-        encrypted_string = f.encrypt(string)
-        if language == "English":
-            print(f"Done!\nString encrypted: {encrypted_string}")
+        if string.lower() == "exit":
+            exit_ = True
         else:
-            print(f"Fatto!\nStringa criptata: {encrypted_string}")
+            string = string.encode()
+            encrypted_string = f.encrypt(string)
+            if language == "English":
+                print(f"Done!\nString encrypted: {encrypted_string}")
+            else:
+                print(f"Fatto!\nStringa criptata: {encrypted_string}")
     else:
         if language == "English":
             file_name = input("Insert the name of the file to encrypt --> ")
         else:
             file_name = input("Inserisci il nome del file da criptare --> ")
-        # file_data = open(file_name).read()
-        with open(file_name, "rb") as file:
-            file_data = file.read()
-        print(file_data)
-        encrypted_data = f.encrypt(file_data)
-        with open(f"{file_name} - Encrypted.txt", "wb") as file:
-            file.write(encrypted_data)
-        if language == "English":
-            print("Done!")
+        if file_name.lower() == "exit":
+            exit_ = True
         else:
-            print("Fatto!")
+            # file_data = open(file_name).read()
+            with open(file_name, "rb") as file:
+                file_data = file.read()
+            print(file_data)
+            encrypted_data = f.encrypt(file_data)
+            with open(f"{file_name} - Encrypted.txt", "wb") as file:
+                file.write(encrypted_data)
+            if language == "English":
+                print("Done!")
+            else:
+                print("Fatto!")
+    return exit_
 
 
 def write_key():
@@ -151,34 +175,41 @@ def load_key():
 
 
 def decryptor(choice, language):
+    exit_ = False
     key = load_key()
     f = Fernet(key)
     if choice == "1" or choice == "1.":
         if language == "English":
-            encrypted_string = input("Insert the encrypted string --> ").encode()
+            encrypted_string = input("Insert the encrypted string --> ")
         else:
-            encrypted_string = input("Inserisci la stringa criptata --> ").encode()
-        decrypted_string = f.decrypt(encrypted_string)
-        if language == "English":
-            print(f"Done!\nString decrypted: {decrypted_string}")
+            encrypted_string = input("Inserisci la stringa criptata --> ")
+        if encrypted_string.lower() == "exit":
+            exit_ = True
         else:
-            print(f"Fatto!\nStringa decriptata: {decrypted_string}")
+            encrypted_string = encrypted_string.encode()
+            decrypted_string = f.decrypt(encrypted_string)
+            if language == "English":
+                print(f"Done!\nString decrypted: {decrypted_string}")
+            else:
+                print(f"Fatto!\nStringa decriptata: {decrypted_string}")
     else:
         if language == "English":
             file_name = input("Insert the name of the file to decrypt --> ")
         else:
             file_name = input("Inserisci il nome del file da decriptare --> ")
-        # file_data = open(file_name.read()).encode()
-        with open(file_name, "rb") as file:
-            encrypted_data = file.read()
-        decrypted_data = f.decrypt(encrypted_data)
-        with open(f"{file_name} - Decrypted.txt", "wb") as file:
-            file.write(decrypted_data)
-        if language == "English":
-            print("Done!")
+        if file_name.lower() == "exit":
+            exit_ = True
         else:
-            print("Fatto!")
-
-
+            # file_data = open(file_name.read()).encode()
+            with open(file_name, "rb") as file:
+                encrypted_data = file.read()
+            decrypted_data = f.decrypt(encrypted_data)
+            with open(f"{file_name} - Decrypted.txt", "wb") as file:
+                file.write(decrypted_data)
+            if language == "English":
+                print("Done!")
+            else:
+                print("Fatto!")
+    return exit_
 if __name__ == "__main__":
     main()

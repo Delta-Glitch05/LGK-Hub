@@ -60,7 +60,6 @@ six==1.15.0
 soupsieve==2.0.1
 stem==1.8.0
 tqdm==4.48.2
-Twisted @ file:///C:/Users/Daniele/Desktop/LGK-Hub/Twisted-20.3.0-cp38-cp38-win_amd64.whl
 urllib3==1.25.10
 w3lib==1.22.0
 websockets==8.1
