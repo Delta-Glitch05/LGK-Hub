@@ -1,8 +1,8 @@
-import os, sys, subprocess
-from PyQt5.QtCore import QDateTime, Qt, QTimer, QProcess
-from PyQt5.QtWidgets import *
+import os, sys, subprocess, webbrowser
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QDateTime, Qt, QTimer, QProcess, QUrl
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QIcon, QDesktopServices
 
 
 class MainWindow(QDialog):
@@ -21,8 +21,8 @@ class MainWindow(QDialog):
         self.styleComboBox.addItems(QStyleFactory.keys())
         self.styleLabel = QLabel("&Style:")
         self.styleLabel.setBuddy(self.styleComboBox)
-        index = self.styleComboBox.findText("Fusion", QtCore.Qt.MatchFixedString)
-        self.styleComboBox.setCurrentIndex(index)
+        self.index = self.styleComboBox.findText("Fusion", QtCore.Qt.MatchFixedString)
+        self.styleComboBox.setCurrentIndex(self.index)
         self.useStylePaletteCheckBox = QCheckBox("&Use style's standard palette")
         self.useStylePaletteCheckBox.setChecked(True)
         self.disableWidgetsCheckBox = QCheckBox("&Disable widgets")
@@ -57,7 +57,7 @@ class MainWindow(QDialog):
         self.mainLayout.setColumnStretch(1, 1)
         self.setLayout(self.mainLayout)
         self.changeStyle('Fusion')
-        self.setGeometry(450, 250, 800, 600)
+        self.setGeometry(400, 200, 800, 600)
         self.retranslating = False
         self.retranslateUi(MainWindow)
     
@@ -153,8 +153,18 @@ class MainWindow(QDialog):
         self.dns_spoofer.setDefault(True)
         self.arp_spoofer = QPushButton("ARP Spoofer")
         self.arp_spoofer.setDefault(True)
+        self.arp_spoof_detecter = QPushButton("ARP Spoof Attack Detecter")
+        self.arp_spoof_detecter.setDefault(True)
         self.t_ssh_client = QPushButton("SSH and Telnet client")
         self.t_ssh_client.setDefault(True)
+        self.chrome_pass_extractor = QPushButton("Chrome Password Extractor")
+        self.chrome_pass_extractor.setDefault(True)
+        self.payloads = QPushButton("Payloads")
+        self.payloads.setDefault(True)
+        self.wifi_dev_disconnecter = QPushButton("Wi-Fi Device Disconnecter")
+        self.wifi_dev_disconnecter.setDefault(True)
+        self.fake_access_point = QPushButton("Fake Access Points Generator")
+        self.fake_access_point.setDefault(True)
         # self.togglePushButton = QPushButton("Toggle Push Button")
         # self.togglePushButton.setCheckable(True)
         # self.togglePushButton.setChecked(True)
@@ -171,7 +181,12 @@ class MainWindow(QDialog):
         self.layout.addWidget(self.http_sniffer)
         self.layout.addWidget(self.dns_spoofer)
         self.layout.addWidget(self.arp_spoofer)
+        self.layout.addWidget(self.arp_spoof_detecter)
         self.layout.addWidget(self.t_ssh_client)
+        self.layout.addWidget(self.chrome_pass_extractor)
+        self.layout.addWidget(self.payloads)
+        self.layout.addWidget(self.wifi_dev_disconnecter)
+        self.layout.addWidget(self.fake_access_point)
         # self.layout.addWidget(togglePushButton)
         # self.layout.addWidget(flatPushButton)
         self.layout.addStretch(1)
@@ -183,6 +198,8 @@ class MainWindow(QDialog):
         self.brute_forcer.clicked.connect(lambda: self.open_application("brute-forcer"))
         self.steganotool.clicked.connect(lambda: self.open_application("steganotool"))
         self.website_crawler.clicked.connect(lambda: self.open_website_crawler_menu(self.styleName))
+        self.file_encryptor.clicked.connect(lambda: self.open_application("file_encryptor"))
+        self.payloads.clicked.connect(lambda: self.open_payloads_menu(self.styleName))
 
 
     def createTopRightGroupBox(self):
@@ -205,13 +222,13 @@ class MainWindow(QDialog):
         self.font_2.setPointSize(9)
         self.font_2.setWeight(60)
         # self.font_2.setBold(True)
+        self.app_settings_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.return_to_start_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.radioButton1 = QRadioButton("Restart the application and clear the terminal window")
         self.radioButton2 = QRadioButton("Keep the output and don't clean the terminal window")
         self.radioButton1.setChecked(True)
         self.radioButton1.setFont(self.font_2)
         self.radioButton2.setFont(self.font_2)
-        # self.app_settings_label.setAlignment(Qt.AlignCenter)
-        # self.return_to_start_label.setAlignment(Qt.AlignCenter)
         self.button_font = QtGui.QFont()
         self.button_font.setFamily("Arial Nova")
         self.button_font.setWeight(50)
@@ -226,8 +243,6 @@ class MainWindow(QDialog):
         layout.addWidget(self.return_to_start_label)
         layout.addWidget(self.radioButton1)
         layout.addWidget(self.radioButton2)
-        # layout.addWidget(self.conf_button, 10, alignment=QtCore.Qt.AlignBottom)
-        # layout.addWidget(checkBox)
         layout.addStretch(1)
         self.topRightGroupBox.setLayout(layout)
 
@@ -263,26 +278,32 @@ class MainWindow(QDialog):
         self.bottomRightGroupBox = QGroupBox("Group 3")
         self.bottomRightGroupBox.setCheckable(True)
         self.bottomRightGroupBox.setChecked(True)
-        lineEdit = QLineEdit('s3cRe7')
-        lineEdit.setEchoMode(QLineEdit.Password)
-        spinBox = QSpinBox(self.bottomRightGroupBox)
-        spinBox.setValue(50)
-        dateTimeEdit = QDateTimeEdit(self.bottomRightGroupBox)
-        dateTimeEdit.setDateTime(QDateTime.currentDateTime())
-        slider = QSlider(Qt.Horizontal, self.bottomRightGroupBox)
-        slider.setValue(40)
-        scrollBar = QScrollBar(Qt.Horizontal, self.bottomRightGroupBox)
-        scrollBar.setValue(60)
-        dial = QDial(self.bottomRightGroupBox)
-        dial.setValue(30)
-        dial.setNotchesVisible(True)
+        self.lineEdit = QLineEdit('s3cRe7')
+        self.lineEdit.setEchoMode(QLineEdit.Password)
+        self.spinBox = QSpinBox(self.bottomRightGroupBox)
+        self.spinBox.setValue(50)
+        self.dateTimeEdit = QDateTimeEdit(self.bottomRightGroupBox)
+        self.dateTimeEdit.setDateTime(QDateTime.currentDateTime())
+        self.slider = QSlider(Qt.Horizontal, self.bottomRightGroupBox)
+        self.slider.setValue(40)
+        self.scrollBar = QScrollBar(Qt.Horizontal, self.bottomRightGroupBox)
+        self.scrollBar.setValue(60)
+        self.dial = QDial(self.bottomRightGroupBox)
+        self.dial.setValue(30)
+        self.dial.setNotchesVisible(True)
+        self.link = "https://github.com/Delta-Glitch05/LGK-Hub"
+        self.github_link = QLabel(f"<a href='{self.link}'>{self.link}</a>")
+        self.github_link.setFont(self.font_2)
+        self.github_link.setOpenExternalLinks(True)
+        # self.github_link.linkActivated.connect(lambda: QDesktopServices.openUrl(QUrl(self.link)))
         layout = QGridLayout()
-        layout.addWidget(lineEdit, 0, 0, 1, 2)
-        layout.addWidget(spinBox, 1, 0, 1, 2)
-        layout.addWidget(dateTimeEdit, 2, 0, 1, 2)
-        layout.addWidget(slider, 3, 0)
-        layout.addWidget(scrollBar, 4, 0)
-        layout.addWidget(dial, 3, 1, 2, 1)
+        layout.addWidget(self.lineEdit, 0, 0, 1, 2)
+        layout.addWidget(self.spinBox, 1, 0, 1, 2)
+        layout.addWidget(self.dateTimeEdit, 2, 0, 1, 2)
+        layout.addWidget(self.slider, 3, 0)
+        layout.addWidget(self.scrollBar, 4, 0)
+        layout.addWidget(self.dial, 3, 1, 2, 1)
+        layout.addWidget(self.github_link, 6, 0)
         layout.setRowStretch(5, 1)
         self.bottomRightGroupBox.setLayout(layout)
 
@@ -309,6 +330,14 @@ class MainWindow(QDialog):
             if self.radioButton1.isChecked():
                 lang_file.write("\nmenu")
         subprocess.Popen("website_crawler_menu.py", shell=True)
+    
+
+    def open_payloads_menu(self, style):
+        with open("lang.txt", "a") as lang_file:
+            lang_file.write(f"\n{style}")
+            if self.radioButton1.isChecked():
+                lang_file.write("\nmenu")
+        subprocess.Popen("payloads_menu.py", shell=True)
 
 
 def main():

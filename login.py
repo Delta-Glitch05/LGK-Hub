@@ -8,7 +8,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QLineEdit
 import os, subprocess, sys
 
 
@@ -362,6 +362,7 @@ class Ui_MainWindow(object):
         self.username_field.setObjectName("username_field")
         self.password_field = QtWidgets.QLineEdit(self.main_frame)
         self.password_field.setGeometry(QtCore.QRect(340, 235, 220, 25))
+        self.password_field.setEchoMode(QLineEdit.Password)
         font = QtGui.QFont()
         font.setPointSize(12)
         self.password_field.setFont(font)

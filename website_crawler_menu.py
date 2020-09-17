@@ -15,7 +15,7 @@ class Website_Crawler_Menu(QDialog):
     def initUI(self):
         # QtWidgets.QWidget.__init__(self)
         self.setWindowTitle('Website Crawler Menu')
-        self.setGeometry(600, 275, 500, 400)
+        self.setGeometry(550, 275, 500, 400)
         self.changeStyle()
         # print(self.style)
         # self.originalPalette = QApplication.palette()
