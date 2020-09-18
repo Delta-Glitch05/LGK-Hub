@@ -240,5 +240,7 @@ def decryptor(choice, language):
                 else:
                     print("File non valido!")
     return exit_
+
+
 if __name__ == "__main__":
     main()

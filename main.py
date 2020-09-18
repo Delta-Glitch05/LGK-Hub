@@ -199,6 +199,7 @@ class MainWindow(QDialog):
         self.steganotool.clicked.connect(lambda: self.open_application("steganotool"))
         self.website_crawler.clicked.connect(lambda: self.open_website_crawler_menu(self.styleName))
         self.file_encryptor.clicked.connect(lambda: self.open_application("file_encryptor"))
+        self.chrome_pass_extractor.clicked.connect(lambda: self.open_application("chrome_pass_extractor"))
         self.payloads.clicked.connect(lambda: self.open_payloads_menu(self.styleName))
 
 

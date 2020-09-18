@@ -37,12 +37,14 @@ Protego==0.1.16
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.20
+pycryptodome==3.9.8
 PyDispatcher==2.0.5
 pyee==7.0.3
 PyHamcrest==2.0.2
 PyMuPDF==1.17.6
 PyNaCl==1.4.0
 pyOpenSSL==19.1.0
+pypiwin32==223
 pyppeteer==0.2.2
 PyQt5==5.15.0
 PyQt5-sip==12.8.0
@@ -50,6 +52,7 @@ pyquery==1.4.1
 python-dateutil==2.8.1
 python-whois==0.7.3
 pytz==2020.1
+pywin32==228
 queuelib==1.5.0
 requests==2.24.0
 requests-html==0.10.0
