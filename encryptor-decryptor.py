@@ -112,7 +112,7 @@ def main():
                     if mode == "menu":
                         with open("lang.txt", "a") as lang_file:
                             lang_file.write("\nmenu")
-                        subprocess.Popen("file_encryptor.bat", shell=True)
+                        subprocess.Popen("encryptor-decryptor.bat", shell=True)
                         sys.exit()
                     else:
                         break
