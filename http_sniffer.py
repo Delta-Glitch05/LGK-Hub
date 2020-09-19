@@ -11,8 +11,6 @@ RED = Fore.RED
 RESET = Fore.RESET
 
 
-show_raw = ""
-language = ""
 def get_lang_and_mode(mode):
     with open("lang.txt","r") as lang_file:
         list_ = lang_file.readlines()
@@ -33,6 +31,8 @@ def get_lang_and_mode(mode):
     return language, mode
 
 
+show_raw = ""
+language = ""
 def main():
     mode = ""
     language, mode = get_lang_and_mode(mode)
