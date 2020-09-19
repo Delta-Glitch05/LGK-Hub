@@ -11,6 +11,8 @@ RED = Fore.RED
 RESET = Fore.RESET
 
 
+show_raw = ""
+language = ""
 def get_lang_and_mode(mode):
     with open("lang.txt","r") as lang_file:
         list_ = lang_file.readlines()
@@ -57,7 +59,7 @@ def main():
                 show_raw = True
             elif show_raw.lower() == "no" or show_raw == "n":
                 show_raw = False
-            sniff_packets(iface, show_raw, language)
+            sniff_packets(iface)
         if loop == True:
             while True:
                 if language == "English":
@@ -91,15 +93,14 @@ def main():
                         print("Non hai inserito una scelta valida!")
 
 
-def sniff_packets(iface, show_raw, language):
+def sniff_packets(iface):
     if iface:
-        sniff(filter="port 80", prn=lambda: process_packet(packet, show_raw, language), iface=iface, store=False)
+        sniff(filter="port 80", prn=process_packet, iface=iface, store=False)
     else:
-        sniff(filter="port 80", prn=lambda: process_packet(packet, show_raw, language), store=False)
+        sniff(filter="port 80", prn=process_packet, store=False)
 
 
-def process_packet(packet, show_raw, language):
-    print("OK!")
+def process_packet(packet):
     if packet.haslayer(HTTPRequest):
         url = packet[HTTPRequest].Host.decode() + packet[HTTPRequest].Path.decode()
         ip = packet[IP].src
