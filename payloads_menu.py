@@ -1,5 +1,7 @@
 from PyQt5 import QtWidgets
-import os, sys, subprocess
+import os
+import sys
+import subprocess
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QProcess
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui
@@ -29,7 +31,6 @@ class Payloads_Menu(QDialog):
         self.mainLayout.setColumnStretch(0, 1)
         self.mainLayout.setColumnStretch(1, 1)
         self.setLayout(self.mainLayout)
-    
 
     def createGroupBox(self):
         self.groupBox = QGroupBox("Group 1")
@@ -47,11 +48,13 @@ class Payloads_Menu(QDialog):
         self.groupBox.setLayout(self.layout)
         self.retranslating = False
         self.retranslateUi(Payloads_Menu)
-
+        self.remote_shell_cmd.clicked.connect(lambda: self.open_application("remote_cmd_executor"))
+        self.keylogger.clicked.connect(lambda: self.open_application("keylogger"))
+        self.reverse_shell.clicked.connect(lambda: self.open_application("reverse_shell"))
 
     def retranslateUi(self, Payloads_Menu):
         _translate = QtCore.QCoreApplication.translate
-        if self.retranslating == False:
+        if not self.retranslating:
             self.setWindowTitle(_translate("Payloads_Menu", "Payloads_Menu"))
             self.retranslating = True
         # self.language = self.languageBox.currentText()
@@ -68,9 +71,8 @@ class Payloads_Menu(QDialog):
             self.reverse_shell.setText("Reverse Shell")
             self.keylogger.setText("Keylogger")
 
-    
     def get_lang_style_and_mode(self):
-        with open("lang.txt","r") as lang_file:
+        with open("lang.txt", "r") as lang_file:
             list_ = lang_file.readlines()
             language = list_[0]
             lang_list = list(language)
@@ -83,22 +85,23 @@ class Payloads_Menu(QDialog):
                     mode = list_[2]
                 else:
                     mode = "terminal"
-                with open("lang.txt","w") as lang_file:
+                with open("lang.txt", "w") as lang_file:
                     lang_file.write(language)
+            else:
+                style = "Fusion"
+                mode = "terminal"
         return language, style, mode
-
 
     def open_application(self, app):
         if self.mode == "menu":
             with open("lang.txt", "a") as lang_file:
                 lang_file.write("\nmenu")
-        subprocess.Popen(f"{app}.bat", shell=True)
-
+        subprocess.Popen(f"Payloads\\{app}.bat", shell=True)
 
     def changeStyle(self):
         QApplication.setStyle(QStyleFactory.create(self.style))
         # self.changePalette()
-        QApplication.setPalette(QApplication.style().standardPalette())            
+        QApplication.setPalette(QApplication.style().standardPalette())
 
 
 if __name__ == "__main__":

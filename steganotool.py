@@ -1,9 +1,11 @@
-import sys, subprocess, cv2
+import sys
+import subprocess
+import cv2
 import numpy as np
 
 
 def get_lang_and_mode(mode):
-    with open("lang.txt","r") as lang_file:
+    with open("lang.txt", "r") as lang_file:
         list_ = lang_file.readlines()
         language = list_[0]
         if mode == "":
@@ -17,7 +19,7 @@ def get_lang_and_mode(mode):
         language = "".join(lang_list)
         if len(list_) >= 2:
             mode = list_[1]
-            with open("lang.txt","w") as lang_file:
+            with open("lang.txt", "w") as lang_file:
                 lang_file.write(language)
     return language, mode
 
@@ -27,7 +29,7 @@ def main():
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
-    while loop == True:
+    while loop:
         if language == "English":
             choice = input("Do you want to encode (1) or decode (2) an image? --> ")
         else:
@@ -49,7 +51,7 @@ def main():
                 image_name = input("Insert the name of the image you want to decode --> ")
             else:
                 image_name = input("Inserisci il nome dell'immagine che vuoi decodificare --> ")
-            secret_data = decoded_image = decode(image_name, language)
+            secret_data = decode(image_name, language)
             print(secret_data)
         elif choice.lower() == "exit":
             if language == "English":
@@ -63,7 +65,7 @@ def main():
                 print("You have not entered a valid choice!")
             else:
                 print("Non hai inserito una scelta valida!")
-        if loop == True:
+        if loop:
             while True:
                 if language == "English":
                     choice = input("Do you want to exit the program? [Y/n]: ")
@@ -94,13 +96,12 @@ def main():
                         print("You have not entered a valid choice!")
                     else:
                         print("Non hai inserito una scelta valida!")
-            
 
 
 def to_bin(data, language):
     if isinstance(data, str):
         return ''.join([format(ord(i), "08b") for i in data])
-    elif isinstance(data,bytes) or isinstance(data, np.ndarray):
+    elif isinstance(data, bytes) or isinstance(data, np.ndarray):
         return [format(i, "08b") for i in data]
     elif isinstance(data, int) or isinstance(data, np.uint8):
         return format(data, "08b")
@@ -161,7 +162,7 @@ def decode(image_name, language):
             binary_data += r[-1]
             binary_data += g[-1]
             binary_data += b[-1]
-    all_bytes = [binary_data[i: i+8] for i in range(0, len(binary_data), 8)]
+    all_bytes = [binary_data[i: i + 8] for i in range(0, len(binary_data), 8)]
     decoded_data = ""
     for byte in all_bytes:
         decoded_data += chr(int(byte, 2))

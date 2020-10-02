@@ -1,4 +1,7 @@
-import os, sys, subprocess, webbrowser
+import os
+import sys
+import subprocess
+import webbrowser
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QProcess, QUrl
 from PyQt5.QtWidgets import *
@@ -7,7 +10,7 @@ from PyQt5.QtGui import QIcon, QDesktopServices
 
 class MainWindow(QDialog):
     def __init__(self, parent=None):
-        with open("lang.txt","r") as lang_file:
+        with open("lang.txt", "r") as lang_file:
             self.language = lang_file.readline()
         # print(self.language)
         super(MainWindow, self).__init__(parent)
@@ -60,18 +63,18 @@ class MainWindow(QDialog):
         self.setGeometry(400, 200, 800, 600)
         self.retranslating = False
         self.retranslateUi(MainWindow)
-    
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        if self.retranslating == False:
+        if not self.retranslating:
             self.setWindowTitle(_translate("MainWindow", "MainWindow"))
             self.retranslating = True
         # self.language = self.languageBox.currentText()
         if self.language == "English":
             self.setWindowTitle("Choice menu")
             self.styleLabel.setText(_translate("MainWindow", "&Style:"))
-            self.useStylePaletteCheckBox.setText(_translate("MainWindow", "&Use style's standard palette"))
+            self.useStylePaletteCheckBox.setText(_translate(
+                "MainWindow", "&Use style's standard palette"))
             self.disableWidgetsCheckBox.setText(_translate("MainWindow", "&Disable widgets"))
             self.topLeftGroupBox.setTitle("Applications")
             self.topRightGroupBox.setTitle("Settings")
@@ -91,7 +94,8 @@ class MainWindow(QDialog):
         else:
             self.setWindowTitle("Menù di scelta")
             self.styleLabel.setText(_translate("MainWindow", "&Stile:"))
-            self.useStylePaletteCheckBox.setText(_translate("MainWindow", "&Usa i colori standard dello stile"))
+            self.useStylePaletteCheckBox.setText(_translate(
+                "MainWindow", "&Usa i colori standard dello stile"))
             self.disableWidgetsCheckBox.setText(_translate("MainWindow", "&Disabilita i widgets"))
             self.topLeftGroupBox.setTitle("Applicazioni")
             self.topRightGroupBox.setTitle("Impostazioni")
@@ -111,12 +115,10 @@ class MainWindow(QDialog):
             self.radioButton1.setText("Riavvia l'applicazione e pulisci la finestra del terminale")
             self.radioButton2.setText("Mantiene l'output e non pulisce la finestra del terminale")
 
-
     def changeStyle(self, styleName):
         self.styleName = styleName
         QApplication.setStyle(QStyleFactory.create(styleName))
         self.changePalette()
-
 
     def changePalette(self):
         if self.useStylePaletteCheckBox.isChecked():
@@ -124,12 +126,10 @@ class MainWindow(QDialog):
         else:
             QApplication.setPalette(self.originalPalette)
 
-
     def advanceProgressBar(self):
         self.curVal = self.progressBar.value()
         self.maxVal = self.progressBar.maximum()
         self.progressBar.setValue(self.curVal + (self.maxVal - self.curVal) // 100)
-  
 
     def createTopLeftGroupBox(self):
         self.topLeftGroupBox = QGroupBox("Applications")
@@ -198,11 +198,12 @@ class MainWindow(QDialog):
         self.brute_forcer.clicked.connect(lambda: self.open_application("brute-forcer"))
         self.steganotool.clicked.connect(lambda: self.open_application("steganotool"))
         self.website_crawler.clicked.connect(lambda: self.open_website_crawler_menu(self.styleName))
-        self.encryptor_decryptor.clicked.connect(lambda: self.open_application("encryptor-decryptor"))
+        self.encryptor_decryptor.clicked.connect(
+            lambda: self.open_application("encryptor-decryptor"))
         self.http_sniffer.clicked.connect(lambda: self.open_application("http_sniffer"))
-        self.chrome_pass_extractor.clicked.connect(lambda: self.open_application("chrome_pass_extractor"))
+        self.chrome_pass_extractor.clicked.connect(
+            lambda: self.open_application("chrome_pass_extractor"))
         self.payloads.clicked.connect(lambda: self.open_payloads_menu(self.styleName))
-
 
     def createTopRightGroupBox(self):
         self.topRightGroupBox = QGroupBox("Settings")
@@ -248,11 +249,10 @@ class MainWindow(QDialog):
         layout.addStretch(1)
         self.topRightGroupBox.setLayout(layout)
 
-
     def createBottomLeftTabWidget(self):
         self.bottomLeftTabWidget = QTabWidget()
         self.bottomLeftTabWidget.setSizePolicy(QSizePolicy.Preferred,
-                QSizePolicy.Ignored)
+                                               QSizePolicy.Ignored)
         tab1 = QWidget()
         tableWidget = QTableWidget(10, 10)
         tab1hbox = QHBoxLayout()
@@ -263,10 +263,10 @@ class MainWindow(QDialog):
         textEdit = QTextEdit()
 
         textEdit.setPlainText("Twinkle, twinkle, little star,\n"
-                              "How I wonder what you are.\n" 
+                              "How I wonder what you are.\n"
                               "Up above the world so high,\n"
                               "Like a diamond in the sky.\n"
-                              "Twinkle, twinkle, little star,\n" 
+                              "Twinkle, twinkle, little star,\n"
                               "How I wonder what you are!\n")
         tab2hbox = QHBoxLayout()
         tab2hbox.setContentsMargins(5, 5, 5, 5)
@@ -274,7 +274,6 @@ class MainWindow(QDialog):
         tab2.setLayout(tab2hbox)
         self.bottomLeftTabWidget.addTab(tab1, "&Table")
         self.bottomLeftTabWidget.addTab(tab2, "Text &Edit")
-
 
     def createBottomRightGroupBox(self):
         self.bottomRightGroupBox = QGroupBox("Group 3")
@@ -309,7 +308,6 @@ class MainWindow(QDialog):
         layout.setRowStretch(5, 1)
         self.bottomRightGroupBox.setLayout(layout)
 
-
     def createProgressBar(self):
         self.progressBar = QProgressBar()
         self.progressBar.setRange(0, 10000)
@@ -317,7 +315,6 @@ class MainWindow(QDialog):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.advanceProgressBar)
         self.timer.start(1000)
-    
 
     def open_application(self, app):
         if self.radioButton1.isChecked():
@@ -325,14 +322,12 @@ class MainWindow(QDialog):
                 lang_file.write("\nmenu")
         subprocess.Popen(f"{app}.bat", shell=True)
 
-
     def open_website_crawler_menu(self, style):
         with open("lang.txt", "a") as lang_file:
             lang_file.write(f"\n{style}")
             if self.radioButton1.isChecked():
                 lang_file.write("\nmenu")
         subprocess.Popen("website_crawler_menu.py", shell=True)
-    
 
     def open_payloads_menu(self, style):
         with open("lang.txt", "a") as lang_file:

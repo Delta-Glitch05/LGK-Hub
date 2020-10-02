@@ -1,8 +1,11 @@
-import whois, sys, subprocess, os
+import whois
+import sys
+import subprocess
+import os
 
 
 def get_lang_and_mode(mode):
-    with open("lang.txt","r") as lang_file:
+    with open("lang.txt", "r") as lang_file:
         list_ = lang_file.readlines()
         language = list_[0]
         if mode == "":
@@ -16,7 +19,7 @@ def get_lang_and_mode(mode):
         language = "".join(lang_list)
         if len(list_) >= 2:
             mode = list_[1]
-            with open("lang.txt","w") as lang_file:
+            with open("lang.txt", "w") as lang_file:
                 lang_file.write(language)
     return language, mode
 
@@ -26,7 +29,7 @@ def main():
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
-    while loop == True:
+    while loop:
         if language == "English":
             domain_name = input("Insert the domain to scan --> ")
         else:
@@ -39,7 +42,7 @@ def main():
             loop = False
             break
         dom_name_info_extractor(domain_name, language)
-        if loop == True:
+        if loop:
             while True:
                 if language == "English":
                     exit_choice = input("Do you want to exit the program? [Y/n]: ")

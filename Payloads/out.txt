@@ -1,0 +1,5 @@
+[CTRL]cccc[CTRL]ckear[ENTER]
+clear[ENTER]
+clear[ENTER]
+ccc[CTRL]cc[CTRL]c[CTRL][ENTER]
+c[CTRL]

@@ -1,11 +1,14 @@
-import requests, sys, subprocess, re
+import requests
+import sys
+import subprocess
+import re
 from bs4 import BeautifulSoup as bs
 from urllib.parse import urljoin
 from pprint import pprint
 
 
 def get_lang_and_mode(mode):
-    with open("lang.txt","r") as lang_file:
+    with open("lang.txt", "r") as lang_file:
         list_ = lang_file.readlines()
         language = list_[0]
         if mode == "":
@@ -19,7 +22,7 @@ def get_lang_and_mode(mode):
         language = "".join(lang_list)
         if len(list_) >= 2:
             mode = list_[1]
-            with open("lang.txt","w") as lang_file:
+            with open("lang.txt", "w") as lang_file:
                 lang_file.write(language)
     return language, mode
 
@@ -29,7 +32,7 @@ def main():
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
-    while loop == True:
+    while loop:
         # Example URL: http://testphp.vulnweb.com/artists.php?artist=1
         if language == "English":
             url = input("Insert the URL to scan --> ")
@@ -43,24 +46,24 @@ def main():
             loop = False
             break
         else:
-            if "dvwa" in url.lower():
-                s = requests.Session()
-                # if("dvwa" in url.lower()):
-                # Login on DVWA
-                login_payload = {
-                    "username": "admin",
-                    "password": "password",
-                    "Login": "Login",
-                }
-                # change URL to the login page of your DVWA login URL
-                login_url = "http://localhost/DVWA-master/login.php"
-                # login
-                r = s.get(login_url)
-                token = re.search("user_token'\s*value='(.*?)'", r.text).group(1)
-                login_payload['user_token'] = token
-                s.post(login_url, data=login_payload)
+            s = requests.Session()
+            # if "dvwa" in url.lower():
+            # if("dvwa" in url.lower()):
+            # Login on DVWA
+            # login_payload = {
+            #     "username": "admin",
+            #     "password": "password",
+            #     "Login": "Login",
+            # }
+            # # change URL to the login page of your DVWA login URL
+            # login_url = "http://localhost/DVWA-master/login.php"
+            # # login
+            # r = s.get(login_url)
+            # token = re.search("user_token'\s*value='(.*?)'", r.text).group(1)
+            # login_payload['user_token'] = token
+            # s.post(login_url, data=login_payload)
             scan_sql_injection(url, s)
-        if loop == True:
+        if loop:
             while True:
                 if language == "English":
                     choice = input("Do you want to exit the program? [Y/n]: ")
@@ -102,7 +105,7 @@ def get_form_details(form):
     details = {}
     try:
         action = form.attrs.get("action").lower()
-    except:
+    except Exception:
         action = None
     method = form.attrs.get("method", "get").lower()
     inputs = []
@@ -114,7 +117,7 @@ def get_form_details(form):
     details["action"] = action
     details["method"] = method
     details["inputs"] = inputs
-    return 
+    return
 
 
 def is_vulnerable(response):
@@ -152,7 +155,7 @@ def scan_sql_injection(url, s):
                     if input_tag["type"] == "hidden" or input_tag["value"]:
                         try:
                             data[input_tag["name"]] = input_tag["value"] + c
-                        except:
+                        except Exception:
                             pass
                     elif input_tag["type"] != "submit":
                         data[input_tag["name"]] = f"test{c}"

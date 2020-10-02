@@ -1,5 +1,7 @@
 from PyQt5 import QtWidgets
-import os, sys, subprocess
+import os
+import sys
+import subprocess
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QProcess
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui
@@ -29,7 +31,6 @@ class Website_Crawler_Menu(QDialog):
         self.mainLayout.setColumnStretch(0, 1)
         self.mainLayout.setColumnStretch(1, 1)
         self.setLayout(self.mainLayout)
-    
 
     def createGroupBox(self):
         self.groupBox = QGroupBox("Group 1")
@@ -111,10 +112,9 @@ class Website_Crawler_Menu(QDialog):
         self.retranslating = False
         self.retranslateUi(Website_Crawler_Menu)
 
-
     def retranslateUi(self, Website_Crawler_Menu):
         _translate = QtCore.QCoreApplication.translate
-        if self.retranslating == False:
+        if not self.retranslating:
             self.setWindowTitle(_translate("Website_Crawler_Menu", "Website_Crawler_Menu"))
             self.retranslating = True
         # self.language = self.languageBox.currentText()
@@ -161,9 +161,8 @@ class Website_Crawler_Menu(QDialog):
             self.wiki_data_extractor.setText("Estrattore di Dati di Wikipedia")
             self.fb_mess_bot.setText("Bot di Facebook Messenger")
 
-    
     def get_lang_style_and_mode(self):
-        with open("lang.txt","r") as lang_file:
+        with open("lang.txt", "r") as lang_file:
             list_ = lang_file.readlines()
             language = list_[0]
             lang_list = list(language)
@@ -176,22 +175,23 @@ class Website_Crawler_Menu(QDialog):
                     mode = list_[2]
                 else:
                     mode = "terminal"
-                with open("lang.txt","w") as lang_file:
+                with open("lang.txt", "w") as lang_file:
                     lang_file.write(language)
+            else:
+                style = "Fusion"
+                mode = "terminal"
         return language, style, mode
-
 
     def open_application(self, app):
         if self.mode == "menu":
             with open("lang.txt", "a") as lang_file:
                 lang_file.write("\nmenu")
         subprocess.Popen(f"Website_Crawler\\{app}.bat", shell=True)
-    
 
     def changeStyle(self):
         QApplication.setStyle(QStyleFactory.create(self.style))
         # self.changePalette()
-        QApplication.setPalette(QApplication.style().standardPalette())            
+        QApplication.setPalette(QApplication.style().standardPalette())
 
 
 if __name__ == "__main__":

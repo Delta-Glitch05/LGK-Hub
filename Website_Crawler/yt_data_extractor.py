@@ -1,10 +1,12 @@
-import os, sys, subprocess
+import os
+import sys
+import subprocess
 from requests_html import HTMLSession
 from bs4 import BeautifulSoup as bs
 
 
 def get_lang_and_mode(mode):
-    with open("lang.txt","r") as lang_file:
+    with open("lang.txt", "r") as lang_file:
         list_ = lang_file.readlines()
         language = list_[0]
         if mode == "":
@@ -18,7 +20,7 @@ def get_lang_and_mode(mode):
         language = "".join(lang_list)
         if len(list_) >= 2:
             mode = list_[1]
-            with open("lang.txt","w") as lang_file:
+            with open("lang.txt", "w") as lang_file:
                 lang_file.write(language)
     return language, mode
 
@@ -28,7 +30,7 @@ def main():
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
-    while loop == True:
+    while loop:
         if language == "English":
             url = input("Insert the URL of the video --> ")
         else:
@@ -41,7 +43,7 @@ def main():
             loop = False
             break
         data = yt_data_extractor(url, language)
-        if loop == True:
+        if loop:
             while True:
                 if language == "English":
                     exit_choice = input("Do you want to exit the program? [Y/n]: ")
@@ -82,7 +84,6 @@ def yt_data_extractor(url, language):
     result["views"] = ''.join([i for i in soup.find("span", attrs={"class": "view-count"}).text if i in digits])
     # result["published"] = soup.find().text.strip()
     result["publication_date"] = soup.find("div", {"id": "date"}).text[1:]
-    
     en_months = ["jan", "feb", "mar", "apr", "may", "june", "july", "aug", "sept", "oct", "nov", "dec"]
     it_months = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"]
 
@@ -102,8 +103,8 @@ def yt_data_extractor(url, language):
                 result["publication_date"] = ' '.join(lista)
 
     result["video_duration"] = soup.find("span", attrs={"class": "ytp-time-duration"}).text
-    #result["video_tags"] = soup.find("a", attrs={"class": "yt-simple-endpoint style-scope yt-formatted-string"}).text
-    result["video_tags"] = ', '.join([ meta.attrs.get("content") for meta in soup.find_all("meta", {"property": "og:video:tag"}) ])
+    # result["video_tags"] = soup.find("a", attrs={"class": "yt-simple-endpoint style-scope yt-formatted-string"}).text
+    result["video_tags"] = ', '.join([meta.attrs.get("content") for meta in soup.find_all("meta", {"property": "og:video:tag"})])
     text_yt_formatted_strings = soup.find_all("yt-formatted-string", {"id": "text", "class": "ytd-toggle-button-renderer"})
     result["likes"] = text_yt_formatted_strings[0].text
     result["dislikes"] = text_yt_formatted_strings[1].text
@@ -123,7 +124,7 @@ def yt_data_extractor(url, language):
 
 
 def display_data(result, language):
-    if language == "English":    
+    if language == "English":
         print(f"Title: {result['title']}")
         print(f"Views: {result['views']}")
         print(f"Publication date: {result['publication_date']}")
@@ -135,7 +136,7 @@ def display_data(result, language):
         print(f"\nChannel name: {result['channel']['name']}")
         print(f"Channel URL: {result['channel']['url']}")
         print(f"Channel subscribers: {result['channel']['subscribers']}")
-    else:   
+    else:
         print(f"Titolo: {result['title']}")
         print(f"Visualizzazioni: {result['views']}")
         print(f"Data di pubblicazione: {result['publication_date']}")

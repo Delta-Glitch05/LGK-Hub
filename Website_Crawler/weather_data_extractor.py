@@ -1,11 +1,15 @@
-import sys, os, subprocess, requests, re
+import sys
+import os
+import subprocess
+import requests
+import re
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from tqdm import tqdm
 
 
 def get_lang_and_mode(mode):
-    with open("lang.txt","r") as lang_file:
+    with open("lang.txt", "r") as lang_file:
         list_ = lang_file.readlines()
         language = list_[0]
         if mode == "":
@@ -19,7 +23,7 @@ def get_lang_and_mode(mode):
         language = "".join(lang_list)
         if len(list_) >= 2:
             mode = list_[1]
-            with open("lang.txt","w") as lang_file:
+            with open("lang.txt", "w") as lang_file:
                 lang_file.write(language)
     return language, mode
 
@@ -29,7 +33,7 @@ def main():
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
-    while loop == True:
+    while loop:
         URL = "https://www.google.com/search?lr=lang_en&ie=UTF-8&q=weather"
         if language == "English":
             region = input("Insert the region --> ")
@@ -44,10 +48,10 @@ def main():
             break
         if region:
             region = region.replace(" ", "+")
-            URL += f"+{region}" 
+            URL += f"+{region}"
         data = weather_data_extractor(URL, region, language)
         display_data(data)
-        if loop == True:
+        if loop:
             while True:
                 if language == "English":
                     exit_choice = input("Do you want to exit the program? [Y/n]: ")
@@ -144,10 +148,11 @@ def display_data(data):
     print("Next days:")
     for dayweather in data["next_days"]:
         print(dayweather)
-        print("="*40, dayweather["name"], "="*40)
+        print("=" * 40, dayweather["name"], "=" * 40)
         print("Description:", dayweather["weather"])
         print(f"Max temperature: {dayweather['max_temp']}°C")
         print(f"Min temperature: {dayweather['min_temp']}°C")
+
 
 if __name__ == "__main__":
     main()

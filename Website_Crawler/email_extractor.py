@@ -1,9 +1,11 @@
-import sys, subprocess, re
+import sys
+import subprocess
+import re
 from requests_html import HTMLSession
 
 
 def get_lang_and_mode(mode):
-    with open("lang.txt","r") as lang_file:
+    with open("lang.txt", "r") as lang_file:
         list_ = lang_file.readlines()
         language = list_[0]
         if mode == "":
@@ -17,7 +19,7 @@ def get_lang_and_mode(mode):
         language = "".join(lang_list)
         if len(list_) >= 2:
             mode = list_[1]
-            with open("lang.txt","w") as lang_file:
+            with open("lang.txt", "w") as lang_file:
                 lang_file.write(language)
     return language, mode
 
@@ -27,7 +29,7 @@ def main():
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
-    while loop == True:
+    while loop:
         if language == "English":
             url = input("Insert the URL --> ")
         else:
@@ -40,7 +42,7 @@ def main():
             loop = False
             break
         email_extractor(url, language)
-        if loop == True:
+        if loop:
             while True:
                 if language == "English":
                     exit_choice = input("Do you want to exit the program? [Y/n]: ")
