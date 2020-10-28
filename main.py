@@ -73,8 +73,7 @@ class MainWindow(QDialog):
         if self.language == "English":
             self.setWindowTitle("Choice menu")
             self.styleLabel.setText(_translate("MainWindow", "&Style:"))
-            self.useStylePaletteCheckBox.setText(_translate(
-                "MainWindow", "&Use style's standard palette"))
+            self.useStylePaletteCheckBox.setText(_translate("MainWindow", "&Use style's standard palette"))
             self.disableWidgetsCheckBox.setText(_translate("MainWindow", "&Disable widgets"))
             self.topLeftGroupBox.setTitle("Applications")
             self.topRightGroupBox.setTitle("Settings")
@@ -94,8 +93,7 @@ class MainWindow(QDialog):
         else:
             self.setWindowTitle("Menù di scelta")
             self.styleLabel.setText(_translate("MainWindow", "&Stile:"))
-            self.useStylePaletteCheckBox.setText(_translate(
-                "MainWindow", "&Usa i colori standard dello stile"))
+            self.useStylePaletteCheckBox.setText(_translate("MainWindow", "&Usa i colori standard dello stile"))
             self.disableWidgetsCheckBox.setText(_translate("MainWindow", "&Disabilita i widgets"))
             self.topLeftGroupBox.setTitle("Applicazioni")
             self.topRightGroupBox.setTitle("Impostazioni")
@@ -198,12 +196,12 @@ class MainWindow(QDialog):
         self.brute_forcer.clicked.connect(lambda: self.open_application("brute-forcer"))
         self.steganotool.clicked.connect(lambda: self.open_application("steganotool"))
         self.website_crawler.clicked.connect(lambda: self.open_website_crawler_menu(self.styleName))
-        self.encryptor_decryptor.clicked.connect(
-            lambda: self.open_application("encryptor-decryptor"))
+        self.encryptor_decryptor.clicked.connect(lambda: self.open_application("encryptor-decryptor"))
         self.http_sniffer.clicked.connect(lambda: self.open_application("http_sniffer"))
-        self.chrome_pass_extractor.clicked.connect(
-            lambda: self.open_application("chrome_pass_extractor"))
+        self.chrome_pass_extractor.clicked.connect(lambda: self.open_application("chrome_pass_extractor"))
         self.payloads.clicked.connect(lambda: self.open_payloads_menu(self.styleName))
+        self.arp_spoofer.clicked.connect(lambda: self.open_application("arp_spoofer"))
+        self.arp_spoof_detecter.clicked.connect(lambda: self.open_application("arp_spoof_detecter"))
 
     def createTopRightGroupBox(self):
         self.topRightGroupBox = QGroupBox("Settings")
@@ -251,8 +249,7 @@ class MainWindow(QDialog):
 
     def createBottomLeftTabWidget(self):
         self.bottomLeftTabWidget = QTabWidget()
-        self.bottomLeftTabWidget.setSizePolicy(QSizePolicy.Preferred,
-                                               QSizePolicy.Ignored)
+        self.bottomLeftTabWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Ignored)
         tab1 = QWidget()
         tableWidget = QTableWidget(10, 10)
         tab1hbox = QHBoxLayout()

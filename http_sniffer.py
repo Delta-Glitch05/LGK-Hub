@@ -1,4 +1,6 @@
-import requests, subprocess, sys
+import requests
+import subprocess
+import sys
 from scapy.all import *
 from scapy.layers.inet import IP
 from scapy.layers.http import HTTPRequest
@@ -12,7 +14,7 @@ RESET = Fore.RESET
 
 
 def get_lang_and_mode(mode):
-    with open("lang.txt","r") as lang_file:
+    with open("lang.txt", "r") as lang_file:
         list_ = lang_file.readlines()
         language = list_[0]
         if mode == "":
@@ -26,19 +28,21 @@ def get_lang_and_mode(mode):
         language = "".join(lang_list)
         if len(list_) >= 2:
             mode = list_[1]
-            with open("lang.txt","w") as lang_file:
+            with open("lang.txt", "w") as lang_file:
                 lang_file.write(language)
     return language, mode
 
 
 show_raw = ""
 language = ""
+
+
 def main():
     mode = ""
     language, mode = get_lang_and_mode(mode)
     # print(f"{language}, {mode}")
     loop = True
-    while loop == True:
+    while loop:
         while True:
             if language == "English":
                 iface = input("Insert the name of your network interface --> ")
@@ -60,7 +64,7 @@ def main():
             elif show_raw.lower() == "no" or show_raw == "n":
                 show_raw = False
             sniff_packets(iface)
-        if loop == True:
+        if loop:
             while True:
                 if language == "English":
                     choice = input("Do you want to exit the program? [Y/n]: ")
@@ -113,7 +117,7 @@ def process_packet(packet):
             if language == "English":
                 print(f"\n{RED}[*] Some useful RAW data: {packet[Raw].load}{RESET}")
             else:
-                print(f"\n{RED}[*] Alcuni dati RAW utili: {packet[Raw].load}{RESET}")        
+                print(f"\n{RED}[*] Alcuni dati RAW utili: {packet[Raw].load}{RESET}")
 
 
 if __name__ == "__main__":
