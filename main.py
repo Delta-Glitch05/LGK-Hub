@@ -18,7 +18,6 @@ class MainWindow(QDialog):
 
     def initUI(self):
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
-        self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
         self.originalPalette = QApplication.palette()
         self.styleComboBox = QComboBox()
         self.styleComboBox.addItems(QStyleFactory.keys())
